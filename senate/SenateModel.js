@@ -257,7 +257,10 @@ function handleClick2018() {
 }
 
 function handleClick2018r() {
-    document.documentElement.style.cssText = "--maincolor: rgb(125, 51, 49)";
+    document.documentElement.style.setProperty('--maincolor', 'rgb(41, 48, 141)');
+    
+    // Update tints based on new main color
+    updateTintedColors();
     statesArray.length = 0;
     senateArray.length = 0;
     electionyear = "2018";
@@ -291,7 +294,10 @@ function handleClick2018r() {
     
 }
 function handleClick2020r() {
-    document.documentElement.style.cssText = "--maincolor: rgb(97, 50, 87)";
+    document.documentElement.style.setProperty('--maincolor', 'rgb(78, 53, 80)');
+    
+    // Update tints based on new main color
+    updateTintedColors();
     statesArray.length = 0;
     senateArray.length = 0;
     electionyear = "2020";
@@ -325,7 +331,10 @@ function handleClick2020r() {
     
 }
 function handleClick2022r() {
-    document.documentElement.style.cssText = "--maincolor: rgb(49, 50, 125)";
+    document.documentElement.style.setProperty('--maincolor', 'rgb(137, 37, 37)');
+    
+    // Update tints based on new main color
+    updateTintedColors();
     statesArray.length = 0;
     senateArray.length = 0;
     electionyear = "2022";
@@ -358,6 +367,27 @@ function handleClick2022r() {
     });
     
 }
+
+function mixColors(baseColor, tint, weight) {
+    const base = baseColor.match(/\d+/g).map(Number);
+    const tintColor = tint.match(/\d+/g).map(Number);
+  
+    const mixed = base.map((c, i) => Math.round(c * (1 - weight) + tintColor[i] * weight));
+    return `rgb(${mixed[0]}, ${mixed[1]}, ${mixed[2]})`;
+}
+
+function updateTintedColors() {
+    const mainColor = getComputedStyle(document.documentElement).getPropertyValue('--maincolor').trim();
+    
+    if (!mainColor) return; // Avoid errors if --maincolor isn't set
+
+    const tint1 = 'rgba(0, 0, 0, 0.1)';  // 10% darker
+    const tint2 = 'rgba(0, 0, 0, 0.275)'; // 27.5% darker
+
+    document.documentElement.style.setProperty('--main2color', mixColors(mainColor, tint1, 0.1));
+    document.documentElement.style.setProperty('--main3color', mixColors(mainColor, tint2, 0.275));
+}
+
 
 function processStatesSenate(states, year) {
     //cycle through each states and parse the data as needed
@@ -1431,47 +1461,42 @@ function setColorBasedOnChance() {
 }
 
 //Set the colors based on 2024 result
-function setBackgroundColor() {
-    if (pollingAverage > 15) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(50, 50, 150)"; } catch { }
-    }
-    else if (pollingAverage > 10) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(49, 50, 125)"; } catch { }
-    }
-    else if (pollingAverage > 8) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(62, 50, 117)"; } catch { }
-    }
-    else if (pollingAverage > 6) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(73, 50, 110)"; } catch { }
-    }
-    else if (pollingAverage > 4) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(82, 50, 102)"; } catch { }
-    }
-    else if (pollingAverage > 2) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(90, 50, 94)"; } catch { }
-    }
-    else if (pollingAverage >= 0) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(97, 50, 87)"; } catch { }
-    }
-    else if (pollingAverage > -2) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(103, 50, 79)"; } catch { }
-    }
-    else if (pollingAverage > -4) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(109, 51, 72)"; } catch { }
-    }
-    else if (pollingAverage > -6) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(115, 51, 64)"; } catch { }
-    }
-    else if (pollingAverage > -8) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(120, 51, 57)"; } catch { }
-    }
-    else if (pollingAverage > -10) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(125, 51, 49)"; } catch { }
-    }
-    else {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(150, 50, 50)"; } catch { }
-    }
+function mixColors(baseColor, tint, weight) {
+    const base = baseColor.match(/\d+/g).map(Number);
+    const tintColor = tint.match(/\d+/g).map(Number);
+  
+    const mixed = base.map((c, i) => Math.round(c * (1 - weight) + tintColor[i] * weight));
+    return `rgb(${mixed[0]}, ${mixed[1]}, ${mixed[2]})`;
+}
 
+
+function setBackgroundColor() {
+    let newColor;
+
+    if (pollingAverage > 15) newColor = "rgb(41, 48, 141)"; // Blue
+    else if (pollingAverage > 10) newColor = "rgb(49, 49, 129)";
+    else if (pollingAverage > 8) newColor = "rgb(56, 50, 116)";
+    else if (pollingAverage > 6) newColor = "rgb(63, 51, 104)";
+    else if (pollingAverage > 4) newColor = "rgb(72, 52, 90)";
+    else if (pollingAverage > 2) newColor = "rgb(78, 53, 80)";
+    else if (pollingAverage >= 0) newColor = "rgb(87, 50, 73)";
+    else if (pollingAverage > -2) newColor = "rgb(100, 47, 64)";
+    else if (pollingAverage > -4) newColor = "rgb(111, 44, 56)";
+    else if (pollingAverage > -6) newColor = "rgb(119, 42, 50)";
+    else if (pollingAverage > -8) newColor = "rgb(127, 40, 44)";
+    else newColor = "rgb(137, 37, 37)"; // Red
+
+    try {
+        document.documentElement.style.setProperty('--maincolor', newColor);
+        
+        const tint1 = 'rgba(0, 0, 0, 0.1)';  // 10% darker
+        const tint2 = 'rgba(0, 0, 0, 0.275)'; // 27.5% darker
+
+        document.documentElement.style.setProperty('--main2color', mixColors(newColor, tint1, 0.1));
+        document.documentElement.style.setProperty('--main3color', mixColors(newColor, tint2, 0.275));
+    } catch (error) {
+        console.error("Error updating colors:", error);
+    }
 }
 
 //Drop Down Menu
@@ -1592,9 +1617,9 @@ function handleClickCallButtonR(){
     setColorBasedOnChance()
     getPercentDWin();
 }
+
 function getPercentDWin(){
-   
-    if (electionyear == '2024'){
+    if (electionyear == '2024') {
         var DSeats = 28;
     }
     var count = 0;
@@ -1602,28 +1627,30 @@ function getPercentDWin(){
     
     var DemSeatsArray = [];
 
-    while (count < 1000){
-        if (electionyear == '2024'){
+    while (count < 1000) {
+        if (electionyear == '2024') {
             var DSeats = 28;
-        }else if (electionyear == '2022'){
+        } else if (electionyear == '2022') {
             var DSeats = 36;
-        }else if (electionyear == '2020'){
+        } else if (electionyear == '2020') {
             var DSeats = 35;
-        }else if (electionyear == '2018'){
+        } else if (electionyear == '2018') {
             var DSeats = 24;
         }
-        for (var i = 0; i < senateArray.length; i++) {
-            currentState = senateArray[i];     
-            
-            if (currentState.ElectionYear == electionyear){
-                var roll = Math.floor(Math.random() * (100 - 0 + 1)) + 0;
 
-                if(roll < (currentState.ChanceOfDWin * 100)){
-                    DSeats = DSeats + 1
+        for (var i = 0; i < senateArray.length; i++) {
+            let currentState = senateArray[i];     
+
+            if (currentState.ElectionYear == electionyear) {
+                var roll = Math.floor(Math.random() * 101); // Random number between 0-100
+
+                if (roll < (currentState.ChanceOfDWin * 100)) {
+                    DSeats += 1;
                 }
             }
         }
-        if(DSeats >= 50){
+
+        if (DSeats >= 50) {
             DWins++;
         }
 
@@ -1631,24 +1658,26 @@ function getPercentDWin(){
         count++;
     }
 
-    count = 0;
-    sum = 0;
-    while (count < DemSeatsArray.length){
-        sum = sum + DemSeatsArray[count];
-        count++;
-    }
+    // Calculate Average Democratic Seats
+    let sum = DemSeatsArray.reduce((acc, val) => acc + val, 0);
+    let averageD = sum / DemSeatsArray.length;
 
-    var average = sum / DemSeatsArray.length
+    // Calculate Republican Wins & Seats
+    let RWins = 1000 - DWins; // Republican wins are the remaining
+    let averageR = 100 - averageD; // Republican seats = 100 - Democrat seats
 
-    console.log ("Average Seats for Democrats: " + average)
+    console.log(`Democrats win ${DWins}/1000 Times (${(DWins / 10).toFixed(2)}%) \nProjected Seats: ${averageD.toFixed(2)}`);
+    console.log(`Republicans win ${RWins}/1000 Times (${(RWins / 10).toFixed(2)}%) \nProjected Seats: ${averageR.toFixed(2)}`);
 
-    let numberElement = document.getElementById('chanceOfDWin50')
-    numberElement.innerText = (DWins / 1000) * 100;
-    let SeatsElement = document.getElementById('projectedSeatsD')
-    SeatsElement.innerText = average
+    // Update Democrat UI
+    document.getElementById('chanceOfDWin50').innerText = (DWins / 10).toFixed(2);
+    document.getElementById('projectedSeatsD').innerText = averageD.toFixed(2);
 
-    
+    // Update Republican UI
+    document.getElementById('chanceOfRWin50').innerText = (RWins / 10).toFixed(2);
+    document.getElementById('projectedSeatsR').innerText = averageR.toFixed(2);
 }
+
 
 //Set Drop Down Menu to clicked state
 

@@ -2,173 +2,138 @@
 <html lang="en">
 
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>ElectionMap.lol :: (Legacy) House</title>
-   <link rel="stylesheet" href="./style.css">
-   <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap"
-      rel="stylesheet">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElectionMap.lol :: House</title>
+  <link rel="stylesheet" href="../style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
 </head>
 
-<body class="stripe">
-
-   <!-- When you hover over a state this appears-->
-   <div class="StateInfo">
-      <p id="details-box"></p>
-   </div>
-
-   <div class="container">
-
-      <div class="box titlebox">
-            <h1 class="title">ElectionMap.lol</h1>
+<body class="app-container">
+  <div class="StateInfo">
+    <p id="details-box"></p>
+  </div>
+  <div>
+    <header class="top-header stripe">
+      <div class="left-box"></div>
+      <svg class="left-curve" xmlns="http://www.w3.org/2000/svg" viewBox="-2 0 13 12">
+        <path d="M -2 0 L 11 -0 C 10 -0 8 -0 7 4 L 6 8 C 5 12 3 12 2 12 L -2 12 L -2 0" />
+      </svg>
+      <div class="e-m-title">
+        <a href="https://github.com/ElectionMap-lol/electionmap"><h1>ElectionMap.lol</h1></a>
       </div>
+      <svg class="right-curve" xmlns="http://www.w3.org/2000/svg" viewBox="-11 -12 13 12">
+        <path d="M 2 0 L -11 0 C -10 0 -8 0 -7 -4 L -6 -8 C -5 -12 -3 -12 -2 -12 L 2 -12 L 2 0" />
+      </svg>
+      <div class="right-box"></div>
+    </header>
 
-      <div class="box resultbarbox">
-         <div class="resultbar">
-            <div class="color-segment" style="width: 10%;">&nbsp;</div>
-            <div class="color-segment" style="width: 15%;">&nbsp;</div>
-            <div class="color-segment" style="width: 5%;">&nbsp;</div>
-            <div class="color-segment" style="width: 20%;">&nbsp;</div>
-            <div class="color-segment" style="width: 10%;">&nbsp;</div>
-            <div class="color-segment" style="width: 5%;">&nbsp;</div>
-            <div class="color-segment" style="width: 10%;">&nbsp;</div>
-            <div class="color-segment" style="width: 5%;">&nbsp;</div>
-            <div class="color-segment" style="width: 15%;">&nbsp;</div>
-            <div class="color-segment" style="width: 5%;">&nbsp;</div>
-            <div class="color-segment" style="width: 15%;">&nbsp;</div>
-            <div class="color-segment" style="width: 5%;">&nbsp;</div>
-            <div class="color-segment" style="width: 15%;">&nbsp;</div>
-            <div class="color-segment" style="width: 5%;">&nbsp;</div>
-            <div class="color-segment" style="width: 15%;">&nbsp;</div>
-            <div class="color-segment" style="width: 5%;">&nbsp;</div>
-            <div class="Barcountbox">
-               <h2 class="DemBarcount">211</h2>
-               <h2 class="RepBarcount">220</h2>
+    <header class="nav-header">
+      <a href="./index.html">
+        <div class="nav-button">
+          <p>Maps</p>
+        </div>
+      </a>
+      <a href="../polls/index.html">
+        <div class="nav-button">
+          <p>Polls</p>
+        </div>
+      </a>
+      <a href="../about/index.html">
+        <div class="nav-button">
+          <p>About</p>
+        </div>
+      </a>
+    </header>
+
+    <div class="maps-columns">
+      <div class="left-column stripe">
+        <div class="inset-panel">
+          <div class="model-select">
+            <h2>Election</h2>
+            <div class="button-container" id="pres">
+              <a href="../index.html"><button>
+                  <p>President</p>
+                </button></a>
+              <a href="../senate/index.html"><button>
+                  <p>Senate</p>
+                </button></a>
+              <a href="./index.html"><button>
+                  <p>House</p>
+                </button></a>
             </div>
-         </div>
-         <div class="resultcenterline"></div>
-      </div>
 
-      <div class="box modelpickerbox">
-         <h2 class="optiontext">Model</h2>
-         <hr>
-         <button class="ElectionType" id="2024 Model">
-            <p class="buttontext">2024</p>
-         </button>
-
-         <h2 class="optiontext">Actual Results</h2>
-         <hr>
-         <button class="ElectionType" id="Incumbents">
-            <p class="buttontext">Incumbents</p>
-         </button>
-         <button class="ElectionType" id="2022 Actual Results">
-            <p class="buttontext">House 2022</p>
-         </button>
-         <button class="ElectionType" id="2020 President Actual Results">
-            <p class="buttontext">Pres. 2020</p>
-         </button>
-         <button class="ElectionType" id="2016 President Actual Results">
-            <p class="buttontext">Pres. 2016</p>
-         </button>
-         <button class="ElectionType" id="2012 President Actual Results">
-            <p class="buttontext">Pres. 2012</p>
-         </button>
-      </div>
-
-      <div class="box optionsbox">
-         <h2 class="optiontext">Options</h2>
-         <hr>
-         <div class="box">
-            <div class="tooltip">
-               <select id="stateDropDown">
-                  <!-- Options will be populated here -->
-               </select>
-               <span class="tooltiptext">Select a district on the list, or click on the map!</span>
+            <h2>Model</h2>
+            <div class="button-container" id="model">
+              <button id="2024 Model">
+                <p>2024</p>
+              </button>
             </div>
-            <br>
 
-            <h2>Call District for:</h2>
-            <button class="statecall" id="callButtonR" style="background-color: rgb(125, 51, 49);">
-               <p class="buttontext">Republicans</p>
-            </button>
-            <button class="statecall" id="callButtonD" style="background-color: rgb(49, 50, 125);">
-               <p class="buttontext">Democrats</p>
-            </button>
-
-            <hr>
-
-            <!-- Number input field -->
-            <label>Enter a number between 0 and 100 (Dem win %)</label>
-            <br>
-            <input type="number" id="numberInput" name="numberInput" min="0" max="1100" step="1">
-
-            <button class="enter" id="enterButton">
-               <p class="buttontext">Enter</p>
-            </button>
-            <br>
-            <input type="range" min="1" max="100" value="50" class="slider" id="sliderInput" name="numberInput">
-         </div>
-
-         <br>
-
-         <!--Percent Democrats win-->
-         <label for="chanceOfDWinState">
-            <h2>Chance of Democratic Win:</h2>
-         </label>
-         <span class="buttontext" id="chanceOfDWinState">0</span>
-
-         <!--Projected Seats-->
-         <label for="projectedSeatsD">
-            <h2>Projected Democrat Seats:</h2>
-         </label>
-         <span class="buttontext" id="projectedSeatsD">0</span>
-
-         
-         <h2 class="optiontext">Site Settings</h2>
-         <hr>
-
-         <div class="site-settings">
-            <form autocomplete='false'>
-            <label class="switch">
-                <input type="checkbox" id="background-flat">
-                <span class="slidertoggle"></span>
-            </label>
-            <p class="siteoptiontext">Flat Background</p>
-            <br>
-            <label class="switch moblay">
-                <input type="checkbox" id="mobile-layout-toggle">
-                <span class="slidertoggle"></span>
-            </label>
-            <p class="siteoptiontext moblay">Mobile Layout</p>
-            <br>
-            <label class="switch">
-                <input type="checkbox" id="random-color-teams">
-                <span class="slidertoggle"></span>
-            </label>
-            <p class="siteoptiontext">Randomize Colors</p>
-            <br>
-            <button type="button" id="change-hue-btn" style="display: none;"><p class="buttontext">Change Hue</p></button>
-        </form>
+            <h2>Actual Results</h2>
+            <div class="button-container" id="results">
+               <button id="Incumbents">
+                  <p>Incumbents</p>
+               </button>
+               <button id="2022 Actual Results">
+                  <p>House 22</p>
+               </button>
+               <button id="2020 President Actual Results">
+                  <p>Pres. 2020</p>
+               </button>
+               <button id="2016 President Actual Results">
+                  <p>Pres. 2016</p>
+               </button>
+               <button id="2012 President Actual Results">
+                  <p>Pres. 2012</p>
+               </button>
+            </div>
+          </div>
+        </div>
+        <div class="menu-panel">
+          <p>settings box (nothin yet), also Actual 2024 results coming soon! Better zooming/readability too.</p>
         </div>
       </div>
-
-      <div class="box mapviewbox">
-         <div class="buttonbox">
+      <main class="center-column">
+        <div class="results">
+          <div class="results-bar">
+            <div class="color-segment" style="width: 10%">&nbsp;</div>
+            <div class="color-segment" style="width: 15%">&nbsp;</div>
+            <div class="color-segment" style="width: 5%">&nbsp;</div>
+            <div class="color-segment" style="width: 20%">&nbsp;</div>
+            <div class="color-segment" style="width: 10%">&nbsp;</div>
+            <div class="color-segment" style="width: 5%">&nbsp;</div>
+            <div class="color-segment" style="width: 10%">&nbsp;</div>
+            <div class="color-segment" style="width: 5%">&nbsp;</div>
+            <div class="color-segment" style="width: 15%">&nbsp;</div>
+            <div class="color-segment" style="width: 5%">&nbsp;</div>
+            <div class="color-segment" style="width: 15%">&nbsp;</div>
+            <div class="color-segment" style="width: 5%">&nbsp;</div>
+            <div class="color-segment" style="width: 15%">&nbsp;</div>
+            <div class="color-segment" style="width: 5%">&nbsp;</div>
+            <div class="color-segment" style="width: 15%">&nbsp;</div>
+            <div class="color-segment" style="width: 5%">&nbsp;</div>
+            <div class="Barcountbox">
+              <h2 class="DemBarcount">270</h2>
+              <h2 class="RepBarcount">270</h2>
+            </div>
+          </div>
+        </div>
+        <div class="map-viewbox">
+          <div class="buttonbox">
             <button class="ZoomButton" id="Zoomin">
-               <h1>+</h1>
+              <p>+</p>
             </button>
             <button class="ZoomButton" id="Zoomout">
-               <h1>-</h1>
+              <p>-</p>
             </button>
-            <button class="ZoomButton" id="Resetview" style="transform: translateY(5px);">
-               <h1>↪</h1>
+            <button class="ZoomButton" id="Resetview">
+              <p>↪</p>
             </button>
-         </div>
-         <div class="zoomspace">
-            <svg style="scale: 90%" version="1.1" class="house-model" xmlns:dc="http://purl.org/dc/elements/1.1/"
+          </div>
+          <div class="zoomspace">
+            <svg style="scale: 90%" version="1.1" class="house-model map" xmlns:dc="http://purl.org/dc/elements/1.1/"
                xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg"
                xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -1075,18 +1040,61 @@
 
 
             </svg>
+          </div>
+        </div>
+      </main>
+      <div class="right-column stripe">
+        <div class="menu-panel">
+          <div class="wincall-select">
+            <select id="stateDropDown"></select>
+            <h3>Call state for:</h3>
+            <div class="call-button-box">
+              <button id="callButtonD" class="callD">
+                <p>Dem</p>
+              </button>
+              <button id="callButtonR" class="callR">
+                <p>Rep</p>
+              </button>
+            </div>
 
-            <script src="SiteInteractions.js"></script>
-            <script src="https://d3js.org/d3.v4.min.js"></script>
-         </div>
+            <div class="winput-box">
+              <p>Enter a number between 0 and 100 (Dem win %)</p>
+              <div class="winput-number">
+                <input type="number" id="numberInput" name="numberInput" min="0" max="100" step="1" />
+                <button id="enterButton">Enter</button>
+              </div>
+              <input type="range" min="1" max="100" value="50" class="slider" id="sliderInput" name="numberInput" />
+            </div>
+          </div>
+        </div>
+        <div class="inset-panel projections">
+          <div class="menu-panel">
+            <label for="chanceOfDWinState">
+              <p><strong>Chance Dem Majority</strong></p>
+            </label>
+            <p class="buttontext" id="chanceOfDWinState">0</p>
+            <label for="projectedEVsD">
+              <p><strong>Projected Seats</strong></p>
+            </label>
+            <p id="projectedEVsD">0</p>
+          </div>
+          <div class="menu-panel">
+            <label for="chanceOfRWinState">
+              <p><strong>Chance Rep Majority</strong></p>
+            </label>
+            <p class="buttontext" id="chanceOfRWinState">0</p>
+            <label for="projectedEVsR">
+              <p><strong>Projected Seats</strong></p>
+            </label>
+            <p id="projectedEVsR">0</p>
+          </div>
+        </div>
       </div>
-<!-- 
-      <div class="box chartbox">
-         U can put whatever u want in here
-      </div>
- -->
-      <script src="HouseModel.js"></script>
-   </div>
+    </div>
+  </div>
+  <script src="../SiteInteractions.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="./HouseModel.js"></script>
 </body>
 
 </html>

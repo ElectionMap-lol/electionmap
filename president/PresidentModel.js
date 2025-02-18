@@ -142,7 +142,10 @@ function handleClick2020Model() {
 function handleClickResults2020() {
     //console.log("Here");
     statesArray.length = 0;
-    document.documentElement.style.cssText = "--maincolor: rgb(49, 50, 125)";
+    document.documentElement.style.setProperty('--maincolor', 'rgb(41, 48, 141)');
+    
+    // Update tints based on new main color
+    updateTintedColors();
     // Use Papa Parse to fetch and parse the CSV file
     Papa.parse(csvUrl, {
         download: true,
@@ -183,7 +186,10 @@ function handleClick2016Model() {
 function handleClickResults2016() {
 
     statesArray.length = 0;
-    document.documentElement.style.cssText = "--maincolor: rgb(125, 51, 49)";
+    document.documentElement.style.setProperty('--maincolor', 'rgb(137, 37, 37)');
+    
+    // Update tints based on new main color
+    updateTintedColors();
     // Use Papa Parse to fetch and parse the CSV file
     Papa.parse(csvUrl, {
         download: true,
@@ -226,7 +232,10 @@ function handleClick2012Model() {
 function handleClickResults2012() {
 
     statesArray.length = 0;
-    document.documentElement.style.cssText = "--maincolor: rgb(49, 50, 125)";
+    document.documentElement.style.setProperty('--maincolor', 'rgb(41, 48, 141)');
+    
+    // Update tints based on new main color
+    updateTintedColors();
     // Use Papa Parse to fetch and parse the CSV file
     Papa.parse(csvUrl, {
         download: true,
@@ -242,6 +251,26 @@ function handleClickResults2012() {
         }
     });
 
+}
+
+function mixColors(baseColor, tint, weight) {
+    const base = baseColor.match(/\d+/g).map(Number);
+    const tintColor = tint.match(/\d+/g).map(Number);
+  
+    const mixed = base.map((c, i) => Math.round(c * (1 - weight) + tintColor[i] * weight));
+    return `rgb(${mixed[0]}, ${mixed[1]}, ${mixed[2]})`;
+}
+
+function updateTintedColors() {
+    const mainColor = getComputedStyle(document.documentElement).getPropertyValue('--maincolor').trim();
+    
+    if (!mainColor) return; // Avoid errors if --maincolor isn't set
+
+    const tint1 = 'rgba(0, 0, 0, 0.1)';  // 10% darker
+    const tint2 = 'rgba(0, 0, 0, 0.275)'; // 27.5% darker
+
+    document.documentElement.style.setProperty('--main2color', mixColors(mainColor, tint1, 0.1));
+    document.documentElement.style.setProperty('--main3color', mixColors(mainColor, tint2, 0.275));
 }
 
 
@@ -835,47 +864,41 @@ function setColorBasedOnChance() {
 }
 
 //Set the colors based on 2024 result
-function setBackgroundColor() {
-    if (pollingAverage > 15) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(50, 50, 150)"; } catch { }
-    }
-    else if (pollingAverage > 10) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(49, 50, 125)"; } catch { }
-    }
-    else if (pollingAverage > 8) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(62, 50, 117)"; } catch { }
-    }
-    else if (pollingAverage > 6) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(73, 50, 110)"; } catch { }
-    }
-    else if (pollingAverage > 4) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(82, 50, 102)"; } catch { }
-    }
-    else if (pollingAverage > 2) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(90, 50, 94)"; } catch { }
-    }
-    else if (pollingAverage >= 0) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(97, 50, 87)"; } catch { }
-    }
-    else if (pollingAverage > -2) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(103, 50, 79)"; } catch { }
-    }
-    else if (pollingAverage > -4) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(109, 51, 72)"; } catch { }
-    }
-    else if (pollingAverage > -6) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(115, 51, 64)"; } catch { }
-    }
-    else if (pollingAverage > -8) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(120, 51, 57)"; } catch { }
-    }
-    else if (pollingAverage > -10) {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(125, 51, 49)"; } catch { }
-    }
-    else {
-        try { document.documentElement.style.cssText = "--maincolor: rgb(150, 50, 50)"; } catch { }
-    }
+function mixColors(baseColor, tint, weight) {
+    const base = baseColor.match(/\d+/g).map(Number);
+    const tintColor = tint.match(/\d+/g).map(Number);
+  
+    const mixed = base.map((c, i) => Math.round(c * (1 - weight) + tintColor[i] * weight));
+    return `rgb(${mixed[0]}, ${mixed[1]}, ${mixed[2]})`;
+}
 
+function setBackgroundColor() {
+    let newColor;
+
+    if (pollingAverage > 15) newColor = "rgb(41, 48, 141)"; // Blue
+    else if (pollingAverage > 10) newColor = "rgb(49, 49, 129)";
+    else if (pollingAverage > 8) newColor = "rgb(56, 50, 116)";
+    else if (pollingAverage > 6) newColor = "rgb(63, 51, 104)";
+    else if (pollingAverage > 4) newColor = "rgb(72, 52, 90)";
+    else if (pollingAverage > 2) newColor = "rgb(78, 53, 80)";
+    else if (pollingAverage >= 0) newColor = "rgb(87, 50, 73)";
+    else if (pollingAverage > -2) newColor = "rgb(100, 47, 64)";
+    else if (pollingAverage > -4) newColor = "rgb(111, 44, 56)";
+    else if (pollingAverage > -6) newColor = "rgb(119, 42, 50)";
+    else if (pollingAverage > -8) newColor = "rgb(127, 40, 44)";
+    else newColor = "rgb(137, 37, 37)"; // Red
+
+    try {
+        document.documentElement.style.setProperty('--maincolor', newColor);
+        
+        const tint1 = 'rgba(0, 0, 0, 0.1)';  // 10% darker
+        const tint2 = 'rgba(0, 0, 0, 0.275)'; // 27.5% darker
+
+        document.documentElement.style.setProperty('--main2color', mixColors(newColor, tint1, 0.1));
+        document.documentElement.style.setProperty('--main3color', mixColors(newColor, tint2, 0.275));
+    } catch (error) {
+        console.error("Error updating colors:", error);
+    }
 }
 //Drop Down Menu
 
@@ -1001,20 +1024,20 @@ function getPercentDWin() {
     var DEV = 0;
     var DWins = 0;
     var count = 0;
+    var totalEVs = 538; // Total Electoral Votes
 
     var DemVotesArray = [];
 
     while (count < 1000) {
         DEV = 0;
         for (var i = 0; i < statesArray.length; i++) {
-            currentState = statesArray[i];
+            let currentState = statesArray[i];
 
-            var roll = Math.floor(Math.random() * (100 - 0 + 1)) + 0;
+            var roll = Math.floor(Math.random() * 101);
 
             if (roll < (currentState.ChanceOfDWin * 100)) {
-                DEV = DEV + currentState.ElectoralVotes;
+                DEV += currentState.ElectoralVotes;
             }
-
         }
 
         if (DEV >= 270) {
@@ -1024,25 +1047,26 @@ function getPercentDWin() {
         count++;
     }
 
-    count = 0;
-    sum = 0;
-    while (count < DemVotesArray.length) {
-        sum = sum + DemVotesArray[count];
-        count++;
-    }
+    // Calculate Average Electoral Votes for Democrats
+    let sum = DemVotesArray.reduce((acc, val) => acc + val, 0);
+    let averageD = sum / DemVotesArray.length;
 
-    var average = sum / DemVotesArray.length
-    //console.log(statesArray.length)
-    console.log("Democrats win " + DWins + "/1000 Times \nAverage of " + average + "Elecotral Votes")
+    // Calculate Republican Wins & EVs
+    let RWins = 1000 - DWins; // Remaining are Republican wins
+    let averageR = totalEVs - averageD; // Republican EVs = Total - Democrat EVs
 
-    let numberElement = document.getElementById('chanceOfDWinState')
-    numberElement.innerText = (DWins / 1000) * 100;
+    console.log(`Democrats win ${DWins}/1000 Times (${(DWins / 10).toFixed(2)}%) \nAverage of ${averageD.toFixed(2)} Electoral Votes`);
+    console.log(`Republicans win ${RWins}/1000 Times (${(RWins / 10).toFixed(2)}%) \nAverage of ${averageR.toFixed(2)} Electoral Votes`);
 
-    let EVElement = document.getElementById('projectedEVsD')
-    EVElement.innerText = average
+    // Update Democrat UI
+    document.getElementById('chanceOfDWinState').innerText = (DWins / 10).toFixed(2);
+    document.getElementById('projectedEVsD').innerText = averageD.toFixed(2);
 
-
+    // Update Republican UI
+    document.getElementById('chanceOfRWinState').innerText = (RWins / 10).toFixed(2);
+    document.getElementById('projectedEVsR').innerText = averageR.toFixed(2);
 }
+
 
 //Set Drop Down Menu to clicked state
 
