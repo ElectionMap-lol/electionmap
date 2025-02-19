@@ -1,4 +1,3 @@
-# Electionmap.lol
+# electionmap.lol
 
-v2.1.0
-Back To Vanilla
+Created July 2024
