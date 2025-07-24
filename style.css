@@ -204,6 +204,49 @@ hr {
   text-decoration: none;
 }
 
+.dropdown {
+  position: relative;
+}
+
+.dropbtn {
+  background: none;
+  border: none;
+  color: white;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 1.25rem;
+  height: 50px;
+  padding: 0 45px;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--main2tint);
+  min-width: 100%;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* drop shadow */
+  overflow: hidden;
+  z-index: 10;
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.dropdown-content a:hover {
+  background-color: var(--maintint);
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
 a {
   text-decoration: none;
 }
@@ -860,6 +903,51 @@ svg.map {
     transform: translateX(-50px), translateY(-25px);
     filter: drop-shadow(0px 4px 7px rgba(0, 0, 0));
     animation: dash 100s linear;
+    animation-fill-mode: forwards;
+    transition: 0.5;
+}
+
+.housemap .map path {
+    position: absolute;
+    fill: var(--maintint);
+    stroke: black;
+    stroke-width: .25;
+    transition: 0.5s;
+
+}
+
+.housemap .map path.hovered,
+.housemap .map path:hover {
+    stroke: white;
+    stroke-dasharray: 10px;
+    stroke-width: .4px;
+    stroke-linecap: round;
+    stroke-linejoin: bevel;
+    transform: translateX(-50px), translateY(-25px);
+    filter: drop-shadow(0px 4px 7px rgba(0, 0, 0));
+    animation: dash 100s linear;
+    animation-fill-mode: forwards;
+    transition: 0.5;
+}
+
+.nycmap .map path {
+    position: absolute;
+    fill: var(--maintint);
+    stroke: black;
+    stroke-width: .025;
+    transition: 0.5s;
+
+}
+
+.nycmap .map path.hovered,
+.nycmap .map path:hover {
+    stroke: white;
+    stroke-dasharray: 10px;
+    stroke-width: .04px;
+    stroke-linecap: round;
+    stroke-linejoin: bevel;
+    transform: translateX(-50px), translateY(-25px);
+    filter: drop-shadow(0px .4px .7px rgba(0, 0, 0, 0.1));
     animation-fill-mode: forwards;
     transition: 0.5;
 }

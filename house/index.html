@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ElectionMap.lol :: House</title>
-  <link rel="stylesheet" href="../style2.css" />
+  <link rel="stylesheet" href="../style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
 </head>
@@ -29,40 +29,34 @@
       <div class="right-box"></div>
     </header>
 
-    <header class="nav-header">
-      <a href="./index.html">
-        <div class="nav-button">
-          <p>Maps</p>
-        </div>
-      </a>
-      <a href="../polls/index.html">
-        <div class="nav-button">
-          <p>Polls</p>
-        </div>
-      </a>
-      <a href="../about/index.html">
-        <div class="nav-button">
-          <p>About</p>
-        </div>
-      </a>
-    </header>
+<header class="nav-header">
+  <div class="dropdown">
+    <div class="nav-button dropbtn">Maps ▾</div>
+    <div class="dropdown-content">
+      <a href="../index.html">President</a>
+      <a href="../senate/index.html">Senate</a>
+      <a href="../house/index.html">House</a>
+      <a href="../governor/index.html">Governor</a>
+      <a href="../nyc/index.html">NYC</a>
+    </div>
+  </div>
+
+  <a href="../polls/index.html">
+    <div class="nav-button">
+      <p>Polls</p>
+    </div>
+  </a>
+  <a href="../about/index.html">
+    <div class="nav-button">
+      <p>About</p>
+    </div>
+  </a>
+</header>
 
     <div class="maps-columns">
       <div class="left-column stripe">
         <div class="inset-panel">
           <div class="model-select">
-            <h2>Election</h2>
-            <div class="button-container" id="pres">
-              <a href="../index.html"><button>
-                  <p>President</p>
-                </button></a>
-              <a href="../senate/index.html"><button>
-                  <p>Senate</p>
-                </button></a>
-              <a href="./index.html"><button>
-                  <p>House</p>
-                </button></a>
-            </div>
 
             <h2>Model</h2>
             <div class="button-container" id="model">
@@ -101,7 +95,7 @@
           </div>
         </div>
         <div class="menu-panel">
-          <p>settings box (nothin yet), also Actual 2024 results coming soon! Better zooming/readability too.</p>
+          <p>settings box - WIP</p>
         </div>
       </div>
       <main class="center-column">
@@ -141,7 +135,7 @@
               <p>↪</p>
             </button>
           </div>
-          <div class="zoomspace">
+          <div class="zoomspace housemap">
             <svg style="scale: 90%" version="1.1" class="house-model map" xmlns:dc="http://purl.org/dc/elements/1.1/"
                xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg"

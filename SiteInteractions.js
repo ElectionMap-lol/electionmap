@@ -38,13 +38,13 @@ window.addEventListener('DOMContentLoaded', () => {
   // ZOOM AND PAN
   const zoomElement = document.querySelector('.zoomspace');
   let zoom = 1;
-  const ZOOM_SPEED = 0.2;
+  const ZOOM_SPEED = 2;
   let translateX = 0, translateY = 0;
   let isDragging = false;
   let startX, startY;
 
   document.getElementById('Zoomin').addEventListener('click', () => {
-      if (zoom < 8) {
+      if (zoom < 16) {
           zoom += ZOOM_SPEED;
           updateTransform();
       }

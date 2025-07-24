@@ -29,40 +29,34 @@
       <div class="right-box"></div>
     </header>
 
-    <header class="nav-header">
-      <a href="./index.html">
-        <div class="nav-button">
-          <p>Maps</p>
-        </div>
-      </a>
-      <a href="../polls/index.html">
-        <div class="nav-button">
-          <p>Polls</p>
-        </div>
-      </a>
-      <a href="../about/index.html">
-        <div class="nav-button">
-          <p>About</p>
-        </div>
-      </a>
-    </header>
+<header class="nav-header">
+  <div class="dropdown">
+    <div class="nav-button dropbtn">Maps ▾</div>
+    <div class="dropdown-content">
+      <a href="../index.html">President</a>
+      <a href="../senate/index.html">Senate</a>
+      <a href="../house/index.html">House</a>
+      <a href="../governor/index.html">Governor</a>
+      <a href="../nyc/index.html">NYC</a>
+    </div>
+  </div>
+
+  <a href="../polls/index.html">
+    <div class="nav-button">
+      <p>Polls</p>
+    </div>
+  </a>
+  <a href="../about/index.html">
+    <div class="nav-button">
+      <p>About</p>
+    </div>
+  </a>
+</header>
 
     <div class="maps-columns">
       <div class="left-column stripe">
         <div class="inset-panel">
           <div class="model-select">
-            <h2>Election</h2>
-            <div class="button-container" id="pres">
-              <a href="../index.html"><button>
-                  <p>President</p>
-                </button></a>
-              <a href="./index.html"><button>
-                  <p>Senate</p>
-                </button></a>
-              <a href="../house/index.html"><button>
-                  <p>House</p>
-                </button></a>
-            </div>
 
             <h2>Model</h2>
             <div class="button-container" id="model">
@@ -101,7 +95,7 @@
           </div>
         </div>
         <div class="menu-panel">
-          <p>settings box (nothin yet), also Actual 2024 results and better Special Election UI coming soon!</p>
+          <p>settings box - WIP</p>
         </div>
       </div>
       <main class="center-column">
