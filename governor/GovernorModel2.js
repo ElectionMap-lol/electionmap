@@ -57,23 +57,14 @@ Papa.parse(csvUrl, {
 //Process states and set values
 function setStatesValues(states, year) {
     states.forEach(s => {
-        if (s.Year == year && s.District == 'President'){
+        if ((s.Year == year || s.Year == (year - 1) || s.Year == (year - 2) || s.Year == (year - 3) )&& s.District == 'Gov'){
             
             //String that will show when state is hovered over
             if (year == '2028') {
-                infoBoxString = s.State + "\nElection 2024 Results: " + s.P2024 + "\nProj. 2028 Result: " + s.Median + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State + "\nElection 2024 Results: " + s.P2024 + "\nProj. Gov Result: " + s.Median + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
             }
             if (year == '2024') {
                 infoBoxString = s.State  + "\nActual 2024 Result: " + s.Margin + "\nProj. 2024 Result: " + s.Median + "\nElection 2020 Results: " + s.P2020 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
-            }
-            if (year == '2020') {
-                infoBoxString = s.State  + "\nActual 2020 Result: " + s.Margin + "\nProj. 2020 Result: " + s.Median + "\nElection 2016 Results: " + s.P2016 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
-            }
-            if (year == '2016') {
-                infoBoxString = s.State  + "\nActual 2016 Result: " + s.Margin + "\nProj. 2016 Result: " + s.Median + "\nElection 2012 Results: " + s.P2012 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
-            }
-            if (year == '2012') {
-                infoBoxString = s.State  + "\nActual 2012 Result: " + s.Margin + "\nProj. 2012 Result: " + s.Median + "\nElection 2008 Results: " + s.P2008 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
             }
             //This is the state data obbject that is put into the array-------------------------------------------------------
             let stateData = {
@@ -104,18 +95,6 @@ function setStatesValues(states, year) {
 //Set the colors based on chances
 function setColorBasedOnChance() {
 
-    // Clear Segments so they can be reloaded
-    const segments = document.querySelectorAll('.color-segment');
-
-    segments.forEach(segment => {
-        // Get width and color from data attributes
-        const width = segment.getAttribute('data-width');
-        const color = segment.getAttribute('data-color');
-
-        // Apply width and color to the segment
-        segment.style.width = `${0}%`;
-        segment.style.backgroundColor = color;
-    });
 
     var width1 = 0;
     var width2 = 0;
