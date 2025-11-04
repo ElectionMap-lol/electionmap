@@ -695,6 +695,15 @@ button:active {
     flex-grow: 1;
   }
 
+.e-m-title {
+  padding-inline: 0px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+}
+
 .left-box {
   display: none;
 }
