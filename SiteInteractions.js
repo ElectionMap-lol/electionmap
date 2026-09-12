@@ -5,6 +5,37 @@ function formatStat(value) {
   return typeof value === 'number' && isFinite(value) ? value.toFixed(2) : value;
 }
 
+// ---- SITE BACKGROUND ------------------------------------------------------
+// The page colour tracks the result: the site's own purple at a dead heat, sliding
+// to solid blue or solid red as one side approaches the margin that page treats as
+// a blowout. `lean` runs -1 (Republican) to +1 (Democratic).
+//
+// This replaces a `pollingAverage` ladder that never worked: the variable was set to
+// 0, never updated, and read once at script load, so every page just painted the
+// neutral middle of the scale forever.
+const RESULT_BLUE = [41, 48, 141];
+const RESULT_NEUTRAL = [87, 50, 73];
+const RESULT_RED = [137, 37, 37];
+
+function paintResultBackground(lean) {
+  const t = Math.max(-1, Math.min(1, Number(lean) || 0));
+  const target = t >= 0 ? RESULT_BLUE : RESULT_RED;
+  // Same two tints the stylesheet has always used, just derived from the new colour.
+  const shade = (darken) => RESULT_NEUTRAL
+      .map((base, i) => Math.round((base + (target[i] - base) * Math.abs(t)) * (1 - darken)))
+      .join(', ');
+
+  const root = document.documentElement.style;
+  root.setProperty('--maincolor', `rgb(${shade(0)})`);
+  root.setProperty('--main2color', `rgb(${shade(0.1)})`);
+  root.setProperty('--main3color', `rgb(${shade(0.275)})`);
+}
+
+// Where a seat or electoral-vote count sits between a dead heat and a blowout.
+function resultLean(demCount, deadHeat, blowout) {
+  return (Number(demCount) - deadHeat) / (blowout - deadHeat);
+}
+
 // Ensure the script runs only after the document is fully loaded
 window.addEventListener('DOMContentLoaded', () => {
   console.log('SiteInteractions.js loaded successfully');
@@ -40,6 +71,43 @@ window.addEventListener('DOMContentLoaded', () => {
       if (stateElement) {
           d3.select(stateElement).raise();
       }
+  }
+
+  // VIEW SELECTOR
+  // Model and Actual Results are two pages of one control, not two lists: only
+  // one view across both is ever active, so they share a single highlight. The
+  // arrows flip between pages; each page shows all of its own buttons.
+  const pages = [...document.querySelectorAll('.view-page')];
+  const viewTitle = document.getElementById('viewTitle');
+  // By container rather than by #model / #results: the House map splits its result
+  // buttons across two pages, and the Governor map has no pages at all.
+  const viewButtons = [...document.querySelectorAll('.view-select .button-container button')];
+
+  // The highlight is useful even without a switcher (Governor shows all its
+  // buttons at once), so it is not gated on there being pages to flip between.
+  if (viewButtons.length) {
+      const select = (button) => {
+          viewButtons.forEach(other => other.classList.toggle('is-selected', other === button));
+      };
+      viewButtons.forEach(button => button.addEventListener('click', () => select(button)));
+      select(viewButtons[0]);
+  }
+
+  if (pages.length > 1 && viewTitle) {
+      // Any number of pages: the House map will want Model / House / Pres.
+      let current = 0;
+      const showPage = (index) => {
+          current = (index + pages.length) % pages.length;
+          pages.forEach((page, i) => {
+              page.style.transform = `translateX(${-current * 100}%)`;
+              page.setAttribute('aria-hidden', String(i !== current));
+          });
+          viewTitle.textContent = pages[current].dataset.title;
+      };
+
+      onClick('viewPrev', () => showPage(current - 1));
+      onClick('viewNext', () => showPage(current + 1));
+      showPage(0);
   }
 
   // ZOOM AND PAN
@@ -97,6 +165,49 @@ window.addEventListener('DOMContentLoaded', () => {
       const framed = { x: left, y: top, width: right - left, height: bottom - top };
 
       svg.setAttribute('viewBox', `${framed.x} ${framed.y} ${framed.width} ${framed.height}`);
+
+      // Now that the map has the full width the old right column used to take, its
+      // proportional height can exceed the column and get clipped at the bottom.
+      // Size the frame to whichever of width or height runs out first, and hand the
+      // same width to the results bar so the two line up.
+      const fitFrame = () => {
+          const frame = svg.closest('.map-viewbox');
+          const column = svg.closest('.center-column');
+          // The Governor map has no results bar. Bailing out here left its map
+          // width unset, so it fell back to full width and ran off the bottom.
+          const bar = column && column.querySelector('.results');
+          const barHeight = bar ? bar.offsetHeight : 0;
+          if (!frame || !column) return;
+
+          // Stacked on a phone the map is width-driven; the stylesheet handles that.
+          if (window.matchMedia('(max-width: 960px)').matches) {
+              column.style.removeProperty('--map-width');
+              return;
+          }
+
+          // Bounded by height as well as width. Filling the width makes the map
+          // taller than the viewport and cuts the bottom off, so whichever runs
+          // out first wins; the bar above is given the same width to match.
+          const columnStyle = getComputedStyle(column);
+          // Measured from the viewport, not from the column: the column stretches to
+          // fit whatever the frame needs, so reading its height here would just hand
+          // back the size we are trying to constrain and the clamp would never bite.
+          const columnTop = column.getBoundingClientRect().top + window.scrollY;
+          const inner = window.innerHeight - columnTop
+              - parseFloat(columnStyle.paddingTop) - parseFloat(columnStyle.paddingBottom);
+          const spare = inner - barHeight - (bar ? (parseFloat(columnStyle.rowGap) || 0) : 0);
+
+          const border = frame.offsetWidth - frame.clientWidth;   // the dotted frame itself
+          const aspect = framed.width / framed.height;
+          const widest = column.clientWidth
+              - parseFloat(columnStyle.paddingLeft) - parseFloat(columnStyle.paddingRight);
+
+          column.style.setProperty('--map-width',
+              Math.max(0, Math.min(widest, (spare - border) * aspect + border)) + 'px');
+      };
+
+      fitFrame();
+      window.addEventListener('resize', fitFrame);
 
       // Keep the map inside its own frame: at 1x it cannot move, and zoomed in it
       // stops at the edges rather than drifting off into empty space.

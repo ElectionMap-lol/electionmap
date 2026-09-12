@@ -49,32 +49,75 @@
 
     <div class="maps-columns">
       <div class="left-column stripe">
-        <div class="inset-panel">
-          <div class="model-select">
-            <h2>Model</h2>
-            <div class="button-container" id="model">
-              <button id="2025-2027">
-                <p>2025-2027</p>
-              </button>
-              <button id="DEBUG">
-                <p>2020</p>
-              </button>
-            </div>
 
-            <h2>Actual Results</h2>
-            <div class="button-container" id="results">
-              <button id="2021-2024 Results ">
-                <p>2021-2024</p>
-              </button>
+        <!-- View selector: one control, one shared highlight. Only one view is
+             ever active, so the sections are pages of it rather than lists. -->
+        <div class="inset-panel">
+          <div class="view-select">
+            <h2 class="view-title">Model</h2>
+            <div class="button-container">
+              <button id="2025-2027"> <p>2025-2027</p> </button>
+              <button id="DEBUG"> <p>2020</p> </button>
+            </div>
+            <h2 class="view-title">Actual Results</h2>
+            <div class="button-container">
+              <button id="2021-2024 Results "> <p>2021-2024</p> </button>
             </div>
           </div>
         </div>
-       <!--
-        <div class="menu-panel">
-          <p>settings box - WIP</p>
+
+        <!-- Side by side on a phone so both are on screen without scrolling. -->
+        <div class="rail-pair">
+          <div class="menu-panel">
+            <div class="wincall-select">
+                        <select id="stateDropDown"></select>
+                        <h3>Call state for:</h3>
+                        <div class="call-button-box">
+                          <button id="callButtonD" class="callD">
+                            <p>Dem</p>
+                          </button>
+                          <button id="callButtonR" class="callR">
+                            <p>Rep</p>
+                          </button>
+                        </div>
+            
+                        <div class="winput-box">
+                          <p>Enter a number between 0 and 100 (Dem win %)</p>
+                          <div class="winput-number">
+                            <input type="number" id="numberInput" name="numberInput" min="0" max="100" step="1" />
+                            <button id="enterButton">Enter</button>
+                          </div>
+                          <input type="range" min="1" max="100" value="50" class="slider" id="sliderInput" name="numberInput" />
+                        </div>
+                      </div>
+          </div>
+
+          <div class="inset-panel projections">
+                    <div class="menu-panel">
+                      <label for="chanceOfDWinState">
+                        <p><strong>Chance Dem Win</strong></p>
+                      </label>
+                      <p class="buttontext" id="chanceOfDWinState">0</p>
+                      <label for="projectedEVsD">
+                        <p><strong>Projected States</strong></p>
+                      </label>
+                      <p id="projectedEVsD">0</p>
+                    </div>
+                    <div class="menu-panel">
+                      <label for="chanceOfRWinState">
+                        <p><strong>Chance Rep Win</strong></p>
+                      </label>
+                      <p class="buttontext" id="chanceOfRWinState">0</p>
+                      <label for="projectedEVsR">
+                        <p><strong>Projected States</strong></p>
+                      </label>
+                      <p id="projectedEVsR">0</p>
+                    </div>
+                  </div>
         </div>
-        -->
+
       </div>
+
       <main class="center-column">
         <div class="map-viewbox">
           <div class="buttonbox">
@@ -242,55 +285,9 @@
           </div>
         </div>
       </main>
-      <div class="right-column stripe">
-        <div class="menu-panel">
-          <div class="wincall-select">
-            <select id="stateDropDown"></select>
-            <h3>Call state for:</h3>
-            <div class="call-button-box">
-              <button id="callButtonD" class="callD">
-                <p>Dem</p>
-              </button>
-              <button id="callButtonR" class="callR">
-                <p>Rep</p>
-              </button>
-            </div>
-
-            <div class="winput-box">
-              <p>Enter a number between 0 and 100 (Dem win %)</p>
-              <div class="winput-number">
-                <input type="number" id="numberInput" name="numberInput" min="0" max="100" step="1" />
-                <button id="enterButton">Enter</button>
-              </div>
-              <input type="range" min="1" max="100" value="50" class="slider" id="sliderInput" name="numberInput" />
-            </div>
-          </div>
-        </div>
-        <div class="inset-panel projections">
-          <div class="menu-panel">
-            <label for="chanceOfDWinState">
-              <p><strong>Chance Dem Win</strong></p>
-            </label>
-            <p class="buttontext" id="chanceOfDWinState">0</p>
-            <label for="projectedEVsD">
-              <p><strong>Projected EVs</strong></p>
-            </label>
-            <p id="projectedEVsD">0</p>
-          </div>
-          <div class="menu-panel">
-            <label for="chanceOfRWinState">
-              <p><strong>Chance Rep Win</strong></p>
-            </label>
-            <p class="buttontext" id="chanceOfRWinState">0</p>
-            <label for="projectedEVsR">
-              <p><strong>Projected EVs</strong></p>
-            </label>
-            <p id="projectedEVsR">0</p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
+
   <script src="../SiteInteractions.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="./GovernorModel2.js"></script>

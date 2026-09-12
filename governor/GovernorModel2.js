@@ -266,23 +266,13 @@ function onClick(id, handler) {
 
 // Adding an event listener to the buttons
 document.addEventListener('DOMContentLoaded', (event) => {
-    onClick('2028 Model', () => handleClick('2028'));
+    // These are this page's own button ids. They used to be copied from the president
+    // page ('2028 Model' etc.), which exist nowhere here, so the year buttons had never
+    // done anything. setStatesValues takes a four-year window ending at the year passed,
+    // which is what covers all 50 staggered governor terms.
+    onClick('2025-2027', () => handleClick('2028'));            // window 2025-2028
 
-    onClick('2024 Model', () => handleClick('2024'));
-
-    onClick('2020 Model', () => handleClick('2020'));
-
-    onClick('2016 Model', () => handleClick('2016'));
-
-    onClick('2012 Model', () => handleClick('2012'));
-
-    onClick('2024 Actual Results', () => handleClickResults('2024'));
-
-    onClick('2020 Actual Results', () => handleClickResults('2020'));
-
-    onClick('2016 Actual Results', () => handleClickResults('2016'));
-
-    onClick('2012 Actual Results', () => handleClickResults('2012'));
+    onClick('2021-2024 Results ', () => handleClickResults('2024'));  // trailing space is in the id
 
     onClick('enterButton', handleClickEnterButton);
 
@@ -610,39 +600,30 @@ function changeInputTypeNumber() {
 
 
 function getPercentDWin() {
-    var DEV = 0;
-    var DWins = 0;
-    var count = 0;
-    var totalEVs = 538; // Total Electoral Votes
+    // Governors have no electoral college, so this counts states. The old version was
+    // copied from the president page: it summed an Evs column governor rows do not
+    // have (so REV stayed 0 and the panel read "538" and "0.00"), and looked for a
+    // 270 threshold that counting 50 states can never reach - which is why the Dem
+    // chance was pinned at 100.00.
+    const total = statesArray.length;
+    const majority = Math.floor(total / 2) + 1;
 
-    statesArray.sort((a, b) => a.ChanceOfDWin - b.ChanceOfDWin);
+    // Most Dem-friendly first, so the state that reaches a majority is the tipping point.
+    statesArray.sort((a, b) => b.ChanceOfDWin - a.ChanceOfDWin);
 
-    REV = 0
-    DEV = 0
-    totalEVs = 0
-    tippingPoint = .5;
-    for (var i = 0; i < statesArray.length; i++) {
-        
-        
-        if (statesArray[i].ChanceOfDWin < .5){
-            REV = REV + statesArray[i].ElectoralVotes
-        }
-        if(totalEVs < 270){
-            console.log(statesArray[i])
-            totalEVs = totalEVs + statesArray[i].ElectoralVotes
-            tippingPoint = statesArray[i].ChanceOfDWin
-            if (totalEVs > 270){
-                tippingPoint = statesArray[i].ChanceOfDWin
-                console.log(tippingPoint)
-            }
-        }
-    }
-    tippingPoint = tippingPoint * 100
-    // Update Democrat UI
-    document.getElementById('chanceOfDWinState').innerText = tippingPoint.toFixed(2);
-    document.getElementById('projectedEVsD').innerText = 538 - REV
+    let demStates = 0;
+    statesArray.forEach(state => { if (state.ChanceOfDWin > 0.5) demStates++; });
 
-    // Update Republican UI
-    document.getElementById('chanceOfRWinState').innerText = 100 - tippingPoint.toFixed(2);
-    document.getElementById('projectedEVsR').innerText = REV.toFixed(2)
+    const tippingPoint = statesArray.length >= majority
+        ? statesArray[majority - 1].ChanceOfDWin
+        : 0;
+    const demChance = tippingPoint * 100;
+
+    // formatStat rounds for display only, and does the subtraction as a number:
+    // `100 - x.toFixed(2)` was string arithmetic and produced long floats.
+    document.getElementById('chanceOfDWinState').innerText = formatStat(demChance);
+    document.getElementById('projectedEVsD').innerText = demStates;
+
+    document.getElementById('chanceOfRWinState').innerText = formatStat(100 - demChance);
+    document.getElementById('projectedEVsR').innerText = total - demStates;
 }

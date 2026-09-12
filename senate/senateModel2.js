@@ -554,6 +554,9 @@ function setColorsBasedOnResults(year) {
 
     var element2 = document.querySelector('.DemBarcount');
     element2.textContent = DSeats
+
+    // A finished election is settled, so the background goes hard for the winner.
+    paintResultBackground(DSeats >= RSeats ? 1 : -1);
 }
 
 //Set the colors based on 2024 result
@@ -762,32 +765,8 @@ function mixColors(baseColor, tint, weight) {
 
 
 function setBackgroundColor() {
-    let newColor;
-
-    if (pollingAverage > 15) newColor = "rgb(41, 48, 141)"; // Blue
-    else if (pollingAverage > 10) newColor = "rgb(49, 49, 129)";
-    else if (pollingAverage > 8) newColor = "rgb(56, 50, 116)";
-    else if (pollingAverage > 6) newColor = "rgb(63, 51, 104)";
-    else if (pollingAverage > 4) newColor = "rgb(72, 52, 90)";
-    else if (pollingAverage > 2) newColor = "rgb(78, 53, 80)";
-    else if (pollingAverage >= 0) newColor = "rgb(87, 50, 73)";
-    else if (pollingAverage > -2) newColor = "rgb(100, 47, 64)";
-    else if (pollingAverage > -4) newColor = "rgb(111, 44, 56)";
-    else if (pollingAverage > -6) newColor = "rgb(119, 42, 50)";
-    else if (pollingAverage > -8) newColor = "rgb(127, 40, 44)";
-    else newColor = "rgb(137, 37, 37)"; // Red
-
-    try {
-        document.documentElement.style.setProperty('--maincolor', newColor);
-        
-        const tint1 = 'rgba(0, 0, 0, 0.1)';  // 10% darker
-        const tint2 = 'rgba(0, 0, 0, 0.275)'; // 27.5% darker
-
-        document.documentElement.style.setProperty('--main2color', mixColors(newColor, tint1, 0.1));
-        document.documentElement.style.setProperty('--main3color', mixColors(newColor, tint2, 0.275));
-    } catch (error) {
-        console.error("Error updating colors:", error);
-    }
+    // Neutral until the data lands; paintResultBackground takes over from there.
+    paintResultBackground(0);
 }
 
 //Drop Down Menu
@@ -957,4 +936,7 @@ function getPercentDWin() {
     // Update Republican UI
     document.getElementById('chanceOfRWin50').innerText = (100 - tippingPoint).toFixed(2);
     document.getElementById('projectedSeatsR').innerText = 100 - DWins.toFixed(2)
+
+    // 60 of 100 seats either way is as blue or as red as it gets.
+    paintResultBackground(resultLean(DWins, 50, 60));
 }

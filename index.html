@@ -50,50 +50,111 @@
 
     <div class="maps-columns">
       <div class="left-column stripe">
-        <div class="inset-panel">
-          <div class="model-select">
-            <h2>Model</h2>
-            <div class="button-container" id="model">
-              <button id="2028 Model">
-                <p>2028</p>
-              </button>
-              <button id="2024 Model">
-                <p>2024</p>
-              </button>
-              <button id="2020 Model">
-                <p>2020</p>
-              </button>
-              <button id="2016 Model">
-                <p>2016</p>
-              </button>
-              <button id="2012 Model">
-                <p>2012</p>
-              </button>
-            </div>
 
-            <h2>Actual Results</h2>
-            <div class="button-container" id="results">
-              <button id="2024 Actual Results">
-                <p>2024</p>
-              </button>
-              <button id="2020 Actual Results">
-                <p>2020</p>
-              </button>
-              <button id="2016 Actual Results">
-                <p>2016</p>
-              </button>
-              <button id="2012 Actual Results">
-                <p>2012</p>
-              </button>
+        <!-- View selector: one carousel holding two labelled groups. Only one view
+             across both groups is ever active, so they share a single highlight. -->
+        <div class="inset-panel">
+          <div class="view-select">
+            <div class="view-switch">
+              <button class="view-nav" id="viewPrev" type="button" aria-label="Previous section">&lsaquo;</button>
+              <h2 class="view-title" id="viewTitle">Model</h2>
+              <button class="view-nav" id="viewNext" type="button" aria-label="Next section">&rsaquo;</button>
+            </div>
+            <!-- Both pages stay in flow inside a sliding track: that keeps the panel a
+                 constant height whichever page is showing, and lets the change animate. -->
+            <div class="view-pages" id="viewPages">
+              <div class="view-page" id="pageModel" data-title="Model">
+                <div class="button-container" id="model">
+                                <button id="2028 Model">
+                                  <p>2028</p>
+                                </button>
+                                <button id="2024 Model">
+                                  <p>2024</p>
+                                </button>
+                                <button id="2020 Model">
+                                  <p>2020</p>
+                                </button>
+                                <button id="2016 Model">
+                                  <p>2016</p>
+                                </button>
+                                <button id="2012 Model">
+                                  <p>2012</p>
+                                </button>
+                              </div>
+              </div>
+              <div class="view-page" id="pageResults" data-title="Actual Results">
+                <div class="button-container" id="results">
+                                <button id="2024 Actual Results">
+                                  <p>2024</p>
+                                </button>
+                                <button id="2020 Actual Results">
+                                  <p>2020</p>
+                                </button>
+                                <button id="2016 Actual Results">
+                                  <p>2016</p>
+                                </button>
+                                <button id="2012 Actual Results">
+                                  <p>2012</p>
+                                </button>
+                              </div>
+              </div>
             </div>
           </div>
         </div>
-       <!--
-        <div class="menu-panel">
-          <p>settings box - WIP</p>
+
+        <!-- Side by side on a phone so the projections and the call-state controls
+             are both on screen without scrolling. -->
+        <div class="rail-pair">
+          <div class="menu-panel">
+            <div class="wincall-select">
+                        <select id="stateDropDown"></select>
+                        <h3>Call state for:</h3>
+                        <div class="call-button-box">
+                          <button id="callButtonD" class="callD">
+                            <p>Dem</p>
+                          </button>
+                          <button id="callButtonR" class="callR">
+                            <p>Rep</p>
+                          </button>
+                        </div>
+  
+                        <div class="winput-box">
+                          <p>Enter a number between 0 and 100 (Dem win %)</p>
+                          <div class="winput-number">
+                            <input type="number" id="numberInput" name="numberInput" min="0" max="100" step="1" />
+                            <button id="enterButton">Enter</button>
+                          </div>
+                          <input type="range" min="1" max="100" value="50" class="slider" id="sliderInput" name="numberInput" />
+                        </div>
+                      </div>
+          </div>
+
+          <div class="inset-panel projections">
+                    <div class="menu-panel">
+                      <label for="chanceOfDWinState">
+                        <p><strong>Chance Dem Win</strong></p>
+                      </label>
+                      <p class="buttontext" id="chanceOfDWinState">0</p>
+                      <label for="projectedEVsD">
+                        <p><strong>Projected EVs</strong></p>
+                      </label>
+                      <p id="projectedEVsD">0</p>
+                    </div>
+                    <div class="menu-panel">
+                      <label for="chanceOfRWinState">
+                        <p><strong>Chance Rep Win</strong></p>
+                      </label>
+                      <p class="buttontext" id="chanceOfRWinState">0</p>
+                      <label for="projectedEVsR">
+                        <p><strong>Projected EVs</strong></p>
+                      </label>
+                      <p id="projectedEVsR">0</p>
+                    </div>
+                  </div>
         </div>
-        -->
+
       </div>
+
       <main class="center-column">
         <div class="results">
           <div class="results-bar">
@@ -299,55 +360,9 @@
           </div>
         </div>
       </main>
-      <div class="right-column stripe">
-        <div class="menu-panel">
-          <div class="wincall-select">
-            <select id="stateDropDown"></select>
-            <h3>Call state for:</h3>
-            <div class="call-button-box">
-              <button id="callButtonD" class="callD">
-                <p>Dem</p>
-              </button>
-              <button id="callButtonR" class="callR">
-                <p>Rep</p>
-              </button>
-            </div>
-
-            <div class="winput-box">
-              <p>Enter a number between 0 and 100 (Dem win %)</p>
-              <div class="winput-number">
-                <input type="number" id="numberInput" name="numberInput" min="0" max="100" step="1" />
-                <button id="enterButton">Enter</button>
-              </div>
-              <input type="range" min="1" max="100" value="50" class="slider" id="sliderInput" name="numberInput" />
-            </div>
-          </div>
-        </div>
-        <div class="inset-panel projections">
-          <div class="menu-panel">
-            <label for="chanceOfDWinState">
-              <p><strong>Chance Dem Win</strong></p>
-            </label>
-            <p class="buttontext" id="chanceOfDWinState">0</p>
-            <label for="projectedEVsD">
-              <p><strong>Projected EVs</strong></p>
-            </label>
-            <p id="projectedEVsD">0</p>
-          </div>
-          <div class="menu-panel">
-            <label for="chanceOfRWinState">
-              <p><strong>Chance Rep Win</strong></p>
-            </label>
-            <p class="buttontext" id="chanceOfRWinState">0</p>
-            <label for="projectedEVsR">
-              <p><strong>Projected EVs</strong></p>
-            </label>
-            <p id="projectedEVsR">0</p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
+
   <script src="./SiteInteractions.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="./president/PresidentModel2.js"></script>

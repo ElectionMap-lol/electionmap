@@ -367,6 +367,10 @@ function handleClickResults(year){
 
 function setColorBasedOnResult(year) {
     console.log(houseArray.length)
+    // This function only ever coloured districts, so the seat split is counted here
+    // to drive the background.
+    var demDistricts = 0;
+    var decided = 0;
     for (var i = 0; i < houseArray.length; i++) {
         if (year == "2024p") {
             console.log('wtf')
@@ -387,6 +391,11 @@ function setColorBasedOnResult(year) {
         if (year == "2024") {
             var districtPercent = houseArray[i].Result;
         }
+        if (typeof districtPercent === 'number' && isFinite(districtPercent)) {
+            decided++;
+            if (districtPercent > 0) demDistricts++;
+        }
+
         var districtAbbr = houseArray[i].District;
         svgDistrict = document.getElementById(districtAbbr);
 
@@ -442,35 +451,14 @@ function setColorBasedOnResult(year) {
             try { svgDistrict.style.fill = 'rgba(0, 0, 0, 0.15)'; } catch { }
         }
     }
+
+    // A finished election is settled, so the background goes hard for the winner.
+    if (decided) paintResultBackground(demDistricts * 2 >= decided ? 1 : -1);
 }
 
 function setBackgroundColor() {
-    let newColor;
-
-    if (pollingAverage > 15) newColor = "rgb(41, 48, 141)"; // Blue
-    else if (pollingAverage > 10) newColor = "rgb(49, 49, 129)";
-    else if (pollingAverage > 8) newColor = "rgb(56, 50, 116)";
-    else if (pollingAverage > 6) newColor = "rgb(63, 51, 104)";
-    else if (pollingAverage > 4) newColor = "rgb(72, 52, 90)";
-    else if (pollingAverage > 2) newColor = "rgb(78, 53, 80)";
-    else if (pollingAverage >= 0) newColor = "rgb(87, 50, 73)";
-    else if (pollingAverage > -2) newColor = "rgb(100, 47, 64)";
-    else if (pollingAverage > -4) newColor = "rgb(111, 44, 56)";
-    else if (pollingAverage > -6) newColor = "rgb(119, 42, 50)";
-    else if (pollingAverage > -8) newColor = "rgb(127, 40, 44)";
-    else newColor = "rgb(137, 37, 37)"; // Red
-
-    try {
-        document.documentElement.style.setProperty('--maincolor', newColor);
-        
-        const tint1 = 'rgba(0, 0, 0, 0.1)';  // 10% darker
-        const tint2 = 'rgba(0, 0, 0, 0.275)'; // 27.5% darker
-
-        document.documentElement.style.setProperty('--main2color', mixColors(newColor, tint1, 0.1));
-        document.documentElement.style.setProperty('--main3color', mixColors(newColor, tint2, 0.275));
-    } catch (error) {
-        console.error("Error updating colors:", error);
-    }
+    // Neutral until the data lands; paintResultBackground takes over from there.
+    paintResultBackground(0);
 }
 
 //Drop Down Menu
@@ -626,6 +614,9 @@ function getPercentDWin() {
     // Update Republican UI
     document.getElementById('chanceOfRWinState').innerText = (100 - tippingPoint).toFixed(2);
     document.getElementById('projectedEVsR').innerText = 435 - DWins.toFixed(2)
+
+    // 250 of 435 seats either way is as blue or as red as it gets.
+    paintResultBackground(resultLean(DWins, 217.5, 250));
 }
 
 //Incumbent Model Click--------------------------------------------------------------------------------------------------------------------------
