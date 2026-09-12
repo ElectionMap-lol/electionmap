@@ -61,10 +61,10 @@ function setStatesValues(states, year) {
             
             //String that will show when state is hovered over
             if (year == '2028') {
-                infoBoxString = s.State + "\nElection 2024 Results: " + s.P2024 + "\nProj. Gov Result: " + s.Median + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State + "\nElection 2024 Results: " + formatStat(s.P2024) + "\nProj. Gov Result: " + formatStat(s.Median) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
             if (year == '2024') {
-                infoBoxString = s.State  + "\nActual 2024 Result: " + s.Margin + "\nProj. 2024 Result: " + s.Median + "\nElection 2020 Results: " + s.P2020 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nActual 2024 Result: " + formatStat(s.Margin) + "\nProj. 2024 Result: " + formatStat(s.Median) + "\nElection 2020 Results: " + formatStat(s.P2020) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
             //This is the state data obbject that is put into the array-------------------------------------------------------
             let stateData = {
@@ -90,6 +90,22 @@ function setStatesValues(states, year) {
         }
     })
 
+}
+
+// The governor page has no seat-share bar (no .color-segment / .Barcount elements),
+// unlike the president and senate pages. Skip those writes instead of throwing,
+// which used to abort the whole Papa Parse callback and stop getPercentDWin() running.
+function updateShareBar(widths, dVotes, rVotes) {
+    const segments = document.querySelectorAll('.color-segment');
+    if (segments.length >= widths.length) {
+        widths.forEach((width, i) => segments[i].style.width = `${width}%`);
+    }
+
+    const repCount = document.querySelector('.RepBarcount');
+    if (repCount) repCount.textContent = rVotes;
+
+    const demCount = document.querySelector('.DemBarcount');
+    if (demCount) demCount.textContent = dVotes;
 }
 
 //Set the colors based on chances
@@ -202,28 +218,9 @@ function setColorBasedOnChance() {
 
     }
 
-    segments[0].style.width = `${width1}%`;
-    segments[1].style.width = `${width2}%`;
-    segments[2].style.width = `${width3}%`;
-    segments[3].style.width = `${width4}%`;
-    segments[4].style.width = `${width5}%`;
-    segments[5].style.width = `${width6}%`;
-    segments[6].style.width = `${width7}%`;
-    segments[7].style.width = `${width8}%`;
-    segments[8].style.width = `${width9}%`;
-    segments[9].style.width = `${width10}%`;
-    segments[10].style.width = `${width11}%`;
-    segments[11].style.width = `${width12}%`;
-    segments[12].style.width = `${width13}%`;
-    segments[13].style.width = `${width14}%`;
-    segments[14].style.width = `${width15}%`;
-    segments[15].style.width = `${width16}%`;
-
-    var element = document.querySelector('.RepBarcount');
-    element.textContent = RVotes
-
-    var element2 = document.querySelector('.DemBarcount');
-    element2.textContent = DVotes
+    updateShareBar([width1, width2, width3, width4, width5, width6, width7, width8,
+                    width9, width10, width11, width12, width13, width14, width15, width16],
+                   DVotes, RVotes);
 }
 
 // Hover box displays info about state when hovered over
@@ -260,43 +257,38 @@ window.onmousemove = function (e) {
     tooltipSpan.style.left = (x) + 'px';
 };
 
+// Attach a click handler only if that button exists on this page. Without the guard
+// the first missing id threw and every later listener below was skipped.
+function onClick(id, handler) {
+    const button = document.getElementById(id);
+    if (button) button.addEventListener('click', handler);
+}
+
 // Adding an event listener to the buttons
 document.addEventListener('DOMContentLoaded', (event) => {
-    const button2028 = document.getElementById('2028 Model');
-    button2028.addEventListener('click', () => handleClick('2028'));
+    onClick('2028 Model', () => handleClick('2028'));
 
-    const button2024 = document.getElementById('2024 Model');
-    button2024.addEventListener('click', () => handleClick('2024'));
+    onClick('2024 Model', () => handleClick('2024'));
 
-    const button2020 = document.getElementById('2020 Model');
-    button2020.addEventListener('click', () => handleClick('2020'));
+    onClick('2020 Model', () => handleClick('2020'));
 
-    const button2016 = document.getElementById('2016 Model');
-    button2016.addEventListener('click', () => handleClick('2016'));
+    onClick('2016 Model', () => handleClick('2016'));
 
-    const button2012 = document.getElementById('2012 Model');
-    button2012.addEventListener('click', () => handleClick('2012'));
+    onClick('2012 Model', () => handleClick('2012'));
 
-    const button2024r = document.getElementById('2024 Actual Results');
-    button2024r.addEventListener('click', () => handleClickResults('2024'));
+    onClick('2024 Actual Results', () => handleClickResults('2024'));
 
-    const button2020r = document.getElementById('2020 Actual Results');
-    button2020r.addEventListener('click', () => handleClickResults('2020'));
+    onClick('2020 Actual Results', () => handleClickResults('2020'));
 
-    const button2016r = document.getElementById('2016 Actual Results');
-    button2016r.addEventListener('click', () => handleClickResults('2016'));
+    onClick('2016 Actual Results', () => handleClickResults('2016'));
 
-    const button2012r = document.getElementById('2012 Actual Results');
-    button2012r.addEventListener('click', () => handleClickResults('2012'));
+    onClick('2012 Actual Results', () => handleClickResults('2012'));
 
-    const enterButton = document.getElementById('enterButton');
-    enterButton.addEventListener('click', handleClickEnterButton);
+    onClick('enterButton', handleClickEnterButton);
 
-    const callButtonD = document.getElementById('callButtonD');
-    callButtonD.addEventListener('click', handleClickCallButtonD);
+    onClick('callButtonD', handleClickCallButtonD);
 
-    const callButtonR = document.getElementById('callButtonR');
-    callButtonR.addEventListener('click', handleClickCallButtonR);
+    onClick('callButtonR', handleClickCallButtonR);
 
 });
 
@@ -487,28 +479,9 @@ function setColorsBasedOnResults(year) {
         }
 
     }
-    segments[0].style.width = `${width1}%`;
-    segments[1].style.width = `${width2}%`;
-    segments[2].style.width = `${width3}%`;
-    segments[3].style.width = `${width4}%`;
-    segments[4].style.width = `${width5}%`;
-    segments[5].style.width = `${width6}%`;
-    segments[6].style.width = `${width7}%`;
-    segments[7].style.width = `${width8}%`;
-    segments[8].style.width = `${width9}%`;
-    segments[9].style.width = `${width10}%`;
-    segments[10].style.width = `${width11}%`;
-    segments[11].style.width = `${width12}%`;
-    segments[12].style.width = `${width13}%`;
-    segments[13].style.width = `${width14}%`;
-    segments[14].style.width = `${width15}%`;
-    segments[15].style.width = `${width16}%`;
-
-    var element = document.querySelector('.RepBarcount');
-    element.textContent = RVotes
-
-    var element2 = document.querySelector('.DemBarcount');
-    element2.textContent = DVotes
+    updateShareBar([width1, width2, width3, width4, width5, width6, width7, width8,
+                    width9, width10, width11, width12, width13, width14, width15, width16],
+                   DVotes, RVotes);
 }
 
 //Drop Down Menu

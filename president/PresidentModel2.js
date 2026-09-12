@@ -61,19 +61,19 @@ function setStatesValues(states, year) {
             
             //String that will show when state is hovered over
             if (year == '2028') {
-                infoBoxString = s.State + "\nElection 2024 Results: " + s.P2024 + "\nProj. 2028 Result: " + s.Median + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State + "\nElection 2024 Results: " + formatStat(s.P2024) + "\nProj. 2028 Result: " + formatStat(s.Median) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
             if (year == '2024') {
-                infoBoxString = s.State  + "\nActual 2024 Result: " + s.Margin + "\nProj. 2024 Result: " + s.Median + "\nElection 2020 Results: " + s.P2020 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nActual 2024 Result: " + formatStat(s.Margin) + "\nProj. 2024 Result: " + formatStat(s.Median) + "\nElection 2020 Results: " + formatStat(s.P2020) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
             if (year == '2020') {
-                infoBoxString = s.State  + "\nActual 2020 Result: " + s.Margin + "\nProj. 2020 Result: " + s.Median + "\nElection 2016 Results: " + s.P2016 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nActual 2020 Result: " + formatStat(s.Margin) + "\nProj. 2020 Result: " + formatStat(s.Median) + "\nElection 2016 Results: " + formatStat(s.P2016) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
             if (year == '2016') {
-                infoBoxString = s.State  + "\nActual 2016 Result: " + s.Margin + "\nProj. 2016 Result: " + s.Median + "\nElection 2012 Results: " + s.P2012 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nActual 2016 Result: " + formatStat(s.Margin) + "\nProj. 2016 Result: " + formatStat(s.Median) + "\nElection 2012 Results: " + formatStat(s.P2012) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
             if (year == '2012') {
-                infoBoxString = s.State  + "\nActual 2012 Result: " + s.Margin + "\nProj. 2012 Result: " + s.Median + "\nElection 2008 Results: " + s.P2008 + "\nDems Win: " + s.Chance * 100 + "%\nReps Win: " + (100 - s.Chance * 100) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nActual 2012 Result: " + formatStat(s.Margin) + "\nProj. 2012 Result: " + formatStat(s.Median) + "\nElection 2008 Results: " + formatStat(s.P2008) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
             //This is the state data obbject that is put into the array-------------------------------------------------------
             let stateData = {

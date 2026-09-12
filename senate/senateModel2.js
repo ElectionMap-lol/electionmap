@@ -15,6 +15,7 @@ Papa.parse(csvUrl, {
     skipEmptyLines: true, // Skip empty lines
     complete: function (results) {
         processStates(results.data, '2026');
+        prepareMapForYear();
         setColorBasedOnChance('2026');
         getPercentDWin();
         populateDropDown();
@@ -33,7 +34,7 @@ document.addEventListener('mouseover', function (e) {
         var hoveredState = null;
         var found = false;
         for (var i = 0; i < statesArray.length; i++) {
-            if (statesArray[i].State == stateName) { 
+            if (statesArray[i].StateAbbreviation == stateAbbr) { 
                 if(statesArray[i].ElectionYear == electionyear){
                     hoveredState = statesArray[i];
                     found = true;
@@ -44,9 +45,12 @@ document.addEventListener('mouseover', function (e) {
                 }              
             }
         }
-        if(found = true){
+        if (found) {
             document.getElementById("details-box").innerHTML = output;
             document.getElementById("details-box").style.opacity = "100%";
+        } else {
+            // No race here this year - don't leave the previous state's text up.
+            document.getElementById("details-box").style.opacity = "0%";
         }
     }
     else {
@@ -132,6 +136,7 @@ function handleClick(year){
         skipEmptyLines: true, // Skip empty lines
         complete: function (results) {
             processStates(results.data, year);
+            prepareMapForYear();
             setColorBasedOnChance(year);
             getPercentDWin();
             populateDropDown();
@@ -154,6 +159,7 @@ function handleClickResults(year){
         skipEmptyLines: true, // Skip empty lines
         complete: function (results) {
             processStates(results.data, year);
+            prepareMapForYear();
             setColorsBasedOnResults(year);
         },
         error: function (error) {
@@ -161,6 +167,141 @@ function handleClickResults(year){
         }
     });
 
+}
+
+// ---- STATES HOLDING TWO RACES IN ONE YEAR ----
+// Now and then a state votes on two Senate seats at once: its regular class seat plus
+// a special election. Rather than float a second copy of the state beside the map, the
+// state itself is cut in half along a 45 degree line running lower-left to upper-right.
+// The regular race takes the upper-left half, the special takes the lower-right. The cut
+// only exists in years where that state really does hold two races.
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+// Only states actually holding a race get a fill, so clear last year's colours first.
+function resetStateFills() {
+    // Direct children only: clipPath definitions also contain <path> elements.
+    document.querySelectorAll('.zoomspace svg.map > g.zoomlayer > path, .zoomspace svg.map > path').forEach(path => {
+        path.style.fill = '';
+    });
+}
+
+function clearRaceSplits() {
+    document.querySelectorAll('.race-half, .race-divider').forEach(el => el.remove());
+
+    const oldClips = document.getElementById('race-split-clips');
+    if (oldClips) oldClips.remove();
+
+    document.querySelectorAll('[data-race-split]').forEach(path => {
+        path.style.clipPath = '';
+        path.removeAttribute('data-race-split');
+    });
+}
+
+function splitStatesWithTwoRaces() {
+    const svg = document.querySelector('.zoomspace svg.map');
+    if (!svg) return;
+
+    // Group this year's races by the state they sit in: "GA-S" belongs to "GA".
+    const racesByState = {};
+    statesArray.forEach(race => {
+        if (race.ElectionYear != electionyear) return;
+        const state = String(race.StateAbbreviation).replace(/-S$/, '');
+        (racesByState[state] = racesByState[state] || []).push(race);
+    });
+
+    const clips = document.createElementNS(SVG_NS, 'defs');
+    clips.id = 'race-split-clips';
+
+    Object.keys(racesByState).forEach(state => {
+        // Regular seat first, special second, so the halves mean the same thing every year.
+        const races = racesByState[state]
+            .sort((a, b) => /-S$/.test(a.StateAbbreviation) - /-S$/.test(b.StateAbbreviation));
+        if (races.length < 2) return;
+
+        const statePath = document.getElementById(state);
+        if (!statePath) return;
+
+        // A 45 degree cut through the middle, drawn well past the state's bounds so the
+        // two triangles always cover it whatever its shape.
+        const box = statePath.getBBox();
+        const midX = box.x + box.width / 2;
+        const midY = box.y + box.height / 2;
+        const reach = Math.max(box.width, box.height);
+        const corner = (x, y) => `${midX + x * reach},${midY + y * reach}`;
+        const lowerLeft = corner(-1, 1);
+        const upperRight = corner(1, -1);
+
+        const halves = [
+            { race: races[0], clipId: `race-cut-${state}-a`, points: `${lowerLeft} ${upperRight} ${corner(-1, -1)}` },
+            { race: races[1], clipId: `race-cut-${state}-b`, points: `${lowerLeft} ${upperRight} ${corner(1, 1)}` },
+        ];
+
+        halves.forEach(half => {
+            const clip = document.createElementNS(SVG_NS, 'clipPath');
+            clip.id = half.clipId;
+            // The state carries its own transform, so clip in that same space.
+            clip.setAttribute('clipPathUnits', 'userSpaceOnUse');
+            const triangle = document.createElementNS(SVG_NS, 'polygon');
+            triangle.setAttribute('points', half.points);
+            clip.appendChild(triangle);
+            clips.appendChild(clip);
+        });
+
+        // The state path itself becomes the first race's half...
+        statePath.setAttribute('data-race-split', state);
+        statePath.style.clipPath = `url(#${halves[0].clipId})`;
+
+        // ...and a clipped copy of it becomes the second's.
+        const special = races[1];
+        // Two races can share an abbreviation (2022 Oklahoma); give the second its own
+        // so colouring and hover can tell the halves apart.
+        if (special.StateAbbreviation === state) special.StateAbbreviation = state + '-S';
+
+        const secondHalf = statePath.cloneNode(false);
+        secondHalf.id = special.StateAbbreviation;
+        secondHalf.dataset.id = special.StateAbbreviation;
+        secondHalf.dataset.name = special.State;
+        secondHalf.removeAttribute('data-race-split');
+        secondHalf.classList.add('race-half');
+        secondHalf.style.clipPath = `url(#${halves[1].clipId})`;
+        statePath.parentNode.insertBefore(secondHalf, statePath.nextSibling);
+
+        // A dashed rule along the cut, so two similar colours still read as two races.
+        // Clipped to the state's own outline so it stops at the border.
+        const outline = document.createElementNS(SVG_NS, 'clipPath');
+        outline.id = `race-shape-${state}`;
+        outline.setAttribute('clipPathUnits', 'userSpaceOnUse');
+        const shape = document.createElementNS(SVG_NS, 'path');
+        shape.setAttribute('d', statePath.getAttribute('d'));
+        outline.appendChild(shape);
+        clips.appendChild(outline);
+
+        const divider = document.createElementNS(SVG_NS, 'line');
+        divider.setAttribute('x1', midX - reach);
+        divider.setAttribute('y1', midY + reach);
+        divider.setAttribute('x2', midX + reach);
+        divider.setAttribute('y2', midY - reach);
+        // The halves carry the state's transform, so the rule must sit in that space too.
+        const stateTransform = statePath.getAttribute('transform');
+        if (stateTransform) divider.setAttribute('transform', stateTransform);
+        divider.setAttribute('stroke', 'black');
+        divider.setAttribute('stroke-width', '1.5');
+        divider.setAttribute('stroke-dasharray', '4 3');
+        divider.setAttribute('stroke-linecap', 'round');
+        divider.setAttribute('pointer-events', 'none');
+        divider.classList.add('race-divider');
+        divider.style.clipPath = `url(#${outline.id})`;
+        statePath.parentNode.insertBefore(divider, secondHalf.nextSibling);
+    });
+
+    if (clips.childNodes.length) svg.appendChild(clips);
+}
+
+// Run after the year's races are loaded, before they are coloured.
+function prepareMapForYear() {
+    clearRaceSplits();
+    resetStateFills();
+    splitStatesWithTwoRaces();
 }
 
 function processStates(states, year) {
@@ -180,23 +321,23 @@ function processStates(states, year) {
             }
 
             if (year == '2026') {
-                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nProj. 2026 Result: " + s.Median + "\nElection 2024 Results: " + s.P2024 + "\nDems Win: " + (s.Chance * 100).toFixed(2) + "%\nReps Win: " + (100 - s.Chance * 100).toFixed(2) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nProj. 2026 Result: " + formatStat(s.Median) + "\nElection 2024 Results: " + formatStat(s.P2024) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
 
             }
             if (year == '2024') {
-                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nActual 2024 Result: " + s.Margin + "\nProj. 2024 Result: " + s.Median + "\nElection 2020 Results: " + s.P2020 + "\nDems Win: " + (s.Chance * 100).toFixed(2) + "%\nReps Win: " + (100 - s.Chance * 100).toFixed(2) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nActual 2024 Result: " + formatStat(s.Margin) + "\nProj. 2024 Result: " + formatStat(s.Median) + "\nElection 2020 Results: " + formatStat(s.P2020) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
 
             }
             if (year == '2022') {
-                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nActual 2022 Result: " + s.Margin + "\nProj. 2022 Result: " + s.Median + "\nElection 2020 Results: " + s.P2020 + "\nDems Win: " + (s.Chance * 100).toFixed(2) + "%\nReps Win: " + (100 - s.Chance * 100).toFixed(2) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nActual 2022 Result: " + formatStat(s.Margin) + "\nProj. 2022 Result: " + formatStat(s.Median) + "\nElection 2020 Results: " + formatStat(s.P2020) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
 
             if (year == '2020') {
-                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nActual 2020 Result: " + s.Margin + "\nProj. 2020 Result: " + s.Median + "\nElection 2016 Results: " + s.P2016 + "\nDems Win: " + (s.Chance * 100).toFixed(2) + "%\nReps Win: " + (100 - s.Chance * 100).toFixed(2) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nActual 2020 Result: " + formatStat(s.Margin) + "\nProj. 2020 Result: " + formatStat(s.Median) + "\nElection 2016 Results: " + formatStat(s.P2016) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
 
             if (year == '2018') {
-                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nActual 2018 Result: " + s.Margin + "\nProj. 2018 Result: " + s.Median + "\nElection 2016 Results: " + s.P2016 + "\nDems Win: " + (s.Chance * 100).toFixed(2) + "%\nReps Win: " + (100 - s.Chance * 100).toFixed(2) + "%\nPolling Average: " + s.Polls
+                infoBoxString = s.State  + "\nIncumbent: " + incumbent + "\nActual 2018 Result: " + formatStat(s.Margin) + "\nProj. 2018 Result: " + formatStat(s.Median) + "\nElection 2016 Results: " + formatStat(s.P2016) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%\nPolling Average: " + formatStat(s.Polls)
             }
             //console.log(infoBoxString)
             //Data for array -----------------------------------------------------

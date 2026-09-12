@@ -295,11 +295,16 @@ button:active {
   border: 3px white dotted;
   display: flex;
   width: calc(100% - 46px);
-  min-height: 50%;
-  flex-grow: 1;
+  /* The dotted frame hugs the map. It used to stretch past it, leaving empty
+     space inside the border that the map never filled. */
+  min-height: 0;
+  flex-grow: 0;
   border-radius: 15px;
-  overflow: scroll;
-  padding: 20px;
+  /* Was `scroll`, which permanently reserved ~21px of scrollbar gutter on the
+     right and bottom. Pan and zoom are d3's job now, so that was dead space. */
+  overflow: hidden;
+  /* No inset: the map should reach the dotted border, not float inside it. */
+  padding: 0;
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
@@ -308,7 +313,9 @@ button:active {
 .zoomspace {
   display: flex;
   width: 100%;
-  height: 100%;
+  /* Was 100%: that stretched the svg taller than its viewBox aspect ratio, so the
+     map got letterboxed inside it with empty bands above and below. */
+  height: auto;
 }
 
 .model-select {
@@ -889,12 +896,15 @@ button:active {
   display: flex;
   flex-direction: column;
   z-index: 50;
-  margin-left: 5px;
   padding: 0;
   text-align: center;
   justify-self: start;
   align-self: flex-start;
-  transform: translateX(-20px) translateY(-17px);
+  /* Sit 20px inside the frame. This used to be a negative translate that relied on
+     .map-viewbox's 20px padding to land correctly; without that padding it pushed
+     the controls outside the border. */
+  margin-top: 20px;
+  margin-left: 20px;
 }
 
 button.ZoomButton {
@@ -923,6 +933,9 @@ button.ZoomButton {
 /* SVG and Path Styles */
 svg.map {
   position: relative;
+  /* Keep the map's own proportions rather than being stretched by the flex row. */
+  height: auto;
+  display: block;
 }
 
 .map path {
@@ -965,10 +978,26 @@ svg.map {
   stroke-linecap: round;
   stroke-linejoin: bevel;
   transform: translateX(-50px), translateY(-25px);
-  filter: drop-shadow(0px 4px 7px rgba(0, 0, 0));
+  /* Explicitly off, not just omitted: leaving it out lets the generic
+     `.map path.hovered` shadow cascade through. The other maps keep theirs. */
+  filter: none;
   animation: dash 100s linear;
   animation-fill-mode: forwards;
   transition: 0.5;
+}
+
+/* Stroke widths are in user units, so they are multiplied by the zoom. By the top
+   couple of zoom steps the district borders and the white focus dashes have grown
+   thick enough to swamp the districts themselves, so thin them down there only.
+   Scoped to .housemap: the other maps are unaffected. */
+.housemap .map.deep-zoom path {
+  stroke-width: .1;
+}
+
+.housemap .map.deep-zoom path.hovered,
+.housemap .map.deep-zoom path:hover {
+  stroke-width: .15;
+  stroke-dasharray: 3px;
 }
 
 .nycmap .map path {

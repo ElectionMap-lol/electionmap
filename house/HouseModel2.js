@@ -78,11 +78,11 @@ function processDistricts(states, year) {
             }
 
             if (year == '2026') {
-                infoBoxString = s.District  + "\nIncumbent: " + incumbent + "\nIncumbent Strength: " + s.IncOverPerformance + "\nProj. 2026 Result: " + s.Median + "\nElection 2024 Results: " + s.P2024 + "\nDems Win: " + (s.Chance * 100).toFixed(2) + "%\nReps Win: " + (100 - s.Chance * 100).toFixed(2)
+                infoBoxString = s.District  + "\nIncumbent: " + incumbent + "\nIncumbent Strength: " + formatStat(s.IncOverPerformance) + "\nProj. 2026 Result: " + formatStat(s.Median) + "\nElection 2024 Results: " + formatStat(s.P2024) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%"
 
             }
             if (year == '2024') {
-                infoBoxString = s.District  + "\nIncumbent: " + incumbent + "\nIncumbent Strength: " + s.IncOverPerformance + "\nActual 2024 Result: " + s.Margin + "\nProj. 2024 Result: " + s.Median + "\nElection 2020 Results: " + s.P2020 + "\nDems Win: " + (s.Chance * 100).toFixed(2) + "%\nReps Win: " + (100 - s.Chance * 100).toFixed(2)
+                infoBoxString = s.District  + "\nIncumbent: " + incumbent + "\nIncumbent Strength: " + formatStat(s.IncOverPerformance) + "\nActual 2024 Result: " + formatStat(s.Margin) + "\nProj. 2024 Result: " + formatStat(s.Median) + "\nElection 2020 Results: " + formatStat(s.P2020) + "\nDems Win: " + formatStat(s.Chance * 100) + "%\nReps Win: " + formatStat(100 - s.Chance * 100) + "%"
 
             }
             //console.log(infoBoxString)
