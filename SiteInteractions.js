@@ -36,9 +36,50 @@ function resultLean(demCount, deadHeat, blowout) {
   return (Number(demCount) - deadHeat) / (blowout - deadHeat);
 }
 
+// The neutral starting colour, painted before any CSV has landed. Each map page
+// used to carry its own copy of this as `setBackgroundColor`, driven by the dead
+// `pollingAverage` ladder described above.
+setBackgroundColor();
+
+function setBackgroundColor() {
+  paintResultBackground(0);
+}
+
+// ---- COLOUR TINTS ---------------------------------------------------------
+// Derives --main2color and --main3color from whatever --maincolor currently is.
+// paintResultBackground sets all three itself; these two exist for the older
+// path where a page assigns --maincolor directly and needs the tints to follow.
+// Both were duplicated verbatim in all four model files - mixColors five times
+// over, because senateModel defined it twice.
+function mixColors(baseColor, tint, weight) {
+  const base = baseColor.match(/\d+/g).map(Number);
+  const tintColor = tint.match(/\d+/g).map(Number);
+
+  const mixed = base.map((c, i) => Math.round(c * (1 - weight) + tintColor[i] * weight));
+  return `rgb(${mixed[0]}, ${mixed[1]}, ${mixed[2]})`;
+}
+
+function updateTintedColors() {
+  const mainColor = getComputedStyle(document.documentElement).getPropertyValue('--maincolor').trim();
+  const tint1 = 'rgba(0, 0, 0, 0.1)';   // 10% darker
+  const tint2 = 'rgba(0, 0, 0, 0.275)'; // 27.5% darker
+
+  document.documentElement.style.setProperty('--main2color', mixColors(mainColor, tint1, 0.1));
+  document.documentElement.style.setProperty('--main3color', mixColors(mainColor, tint2, 0.275));
+}
+
+// ---- HOVER TOOLTIP POSITION ----------------------------------------------
+// Follows the cursor. Which state is under it, and what the box says, stays with
+// each map's own model script - those differ per race. This half does not.
+window.addEventListener('mousemove', (e) => {
+  const box = document.getElementById('details-box');
+  if (!box) return;
+  box.style.top = (e.clientY + 20) + 'px';
+  box.style.left = e.clientX + 'px';
+});
+
 // Ensure the script runs only after the document is fully loaded
 window.addEventListener('DOMContentLoaded', () => {
-  console.log('SiteInteractions.js loaded successfully');
 
   // STATE LAYERING FIX
   const statePaths = document.querySelectorAll('path');
@@ -56,7 +97,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function handleStateClick(event) {
       const stateAbbr = event.target.id;
-      console.log('Selected state:', stateAbbr);
       bringStateToFront(stateAbbr);
   }
 
@@ -109,6 +149,46 @@ window.addEventListener('DOMContentLoaded', () => {
       onClick('viewNext', () => showPage(current + 1));
       showPage(0);
   }
+
+  // BUTTON WIRING
+  // Each button says in the markup which view it loads; this hands that to the
+  // page's own model script. Previously all four model files carried a block
+  // listing every button by id and attaching a listener - about 130 lines that
+  // said nothing the HTML did not already know. The Governor page also had ids
+  // copied from the President page, so its year buttons had silently done
+  // nothing until those were corrected.
+  //
+  // The handlers themselves stay in the model scripts. They are function
+  // declarations in classic scripts, so they hang off window by the time this
+  // runs; a page that does not define one simply has no button carrying it.
+  const callHandler = (name, arg) => {
+      const fn = window[name];
+      if (typeof fn !== 'function') {
+          console.warn(`No ${name} on this page; button ignored.`);
+          return;
+      }
+      arg === undefined ? fn() : fn(arg);
+  };
+
+  const ACTION_HANDLERS = {
+      enter:     'handleClickEnterButton',
+      callD:     'handleClickCallButtonD',
+      callR:     'handleClickCallButtonR',
+      incumbent: 'handleClickIncumbent',
+  };
+
+  document.querySelectorAll('[data-model]').forEach(button => {
+      button.addEventListener('click', () => callHandler('handleClick', button.dataset.model));
+  });
+
+  document.querySelectorAll('[data-results]').forEach(button => {
+      button.addEventListener('click', () => callHandler('handleClickResults', button.dataset.results));
+  });
+
+  document.querySelectorAll('[data-action]').forEach(button => {
+      const handler = ACTION_HANDLERS[button.dataset.action];
+      if (handler) button.addEventListener('click', () => callHandler(handler));
+  });
 
   // ZOOM AND PAN
   // d3.zoom drives this: one code path covers mouse drag, touch drag and pinch.
@@ -172,7 +252,7 @@ window.addEventListener('DOMContentLoaded', () => {
       // same width to the results bar so the two line up.
       const fitFrame = () => {
           const frame = svg.closest('.map-viewbox');
-          const column = svg.closest('.center-column');
+          const column = svg.closest('.dashboard-main');
           // The Governor map has no results bar. Bailing out here left its map
           // width unset, so it fell back to full width and ran off the bottom.
           const bar = column && column.querySelector('.results');
@@ -199,7 +279,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
           const border = frame.offsetWidth - frame.clientWidth;   // the dotted frame itself
           const aspect = framed.width / framed.height;
-          const widest = column.clientWidth
+          // Measured from the dashboard minus the rail, not from the column. The
+          // column now shrinks to hug the map, so reading its width here would feed
+          // the answer back into the question and ratchet the map smaller each pass.
+          const dashboard = column.closest('.dashboard');
+          const rail = dashboard && dashboard.querySelector('.dashboard-rail');
+          const outer = dashboard ? dashboard.clientWidth : column.clientWidth;
+          const railWidth = rail ? rail.getBoundingClientRect().width : 0;
+          const widest = outer - railWidth
               - parseFloat(columnStyle.paddingLeft) - parseFloat(columnStyle.paddingRight);
 
           column.style.setProperty('--map-width',
@@ -229,7 +316,7 @@ window.addEventListener('DOMContentLoaded', () => {
           })
           .on('zoom', () => {
               layer.setAttribute('transform', d3.event.transform);
-              // Only the House map styles this; see .housemap .map.deep-zoom in style.css.
+              // Only the House map styles this; see .housemap .map.deep-zoom in css/maps.css.
               svg.classList.toggle('deep-zoom', d3.event.transform.k >= DEEP_ZOOM);
           });
 
@@ -248,5 +335,4 @@ window.addEventListener('DOMContentLoaded', () => {
       if (button) button.addEventListener('click', handler);
   }
 
-  console.log('Site interactions initialized successfully');
 });
