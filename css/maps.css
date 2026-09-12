@@ -1,0 +1,724 @@
+/* =========================================================================
+   MAPS - loaded by the four map pages (President, Senate, House, Governor)
+   AFTER base.css. Everything specific to the dashboard: the map frame, the
+   result bar, the view selector, and the rail panels.
+
+   Every mobile override for the things in this file lives in the @media
+   block at the BOTTOM. Nothing may be added after it: a rule placed below
+   the media query wins on source order and silently kills the override.
+
+   Some class names here are read by the model scripts and CANNOT be renamed
+   without editing them: .color-segment, .DemBarcount, .RepBarcount,
+   .zoomspace, .map, .senate-model, .race-half, .race-divider.
+   ========================================================================= */
+
+
+/* ---- Dashboard layout -------------------------------------------------- */
+.dashboard {
+  display: flex;
+  /* min- rather than a fixed height: the map fills the column's width and keeps
+     its proportions, so on a wide screen it is taller than the viewport and the
+     page scrolls instead of the frame being squashed and the map letterboxed. */
+  min-height: calc(100vh - 125px);
+  flex-grow: 1;
+  /* The map is capped by height, so on a wide monitor there is surplus width no
+     matter what: 1286px of map in a 1580px column at 2000x1020. Rather than leave
+     it as a gap around the map with the rail pinned to the screen edge, the rail
+     and the map travel together and the surplus splits evenly outside them. */
+  justify-content: center;
+}
+
+/* Holds the view selector, call-state and projections now that the right
+   column is gone, so it stacks them and scrolls if the viewport is short. */
+.dashboard-rail {
+  flex: 0 0 20%;
+  min-width: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.dashboard-main {
+  /* Hugs the map instead of filling the row, so the dotted frame and the results
+     bar sit flush against this panel's edges with no gap either side. Shrinkable
+     as a backstop; fitFrame caps --map-width to what is actually available. */
+  flex: 0 1 auto;
+  width: var(--map-width, 100%);
+  max-width: 100%;
+  min-height: 0;
+  background-color: var(--maincolor);
+  box-shadow: 0px 0px 5px var(--main2tint);
+  display: flex;
+  /* Tight vertically: every pixel here is height the map can use, and because the
+     map is height-limited that turns directly into map width. */
+  padding: 8px 10px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* ---- Hover tooltip ----------------------------------------------------- */
+#details-box {
+  position: fixed;
+  z-index: 100;
+  padding: 1rem;
+  width: fit-content;
+  background-color: rgba(0, 0, 0, 0.5);
+  font-family: Josefin Sans, sans-serif;
+  font-size: 24px;
+  color: white;
+  text-align: left;
+  white-space: pre;
+  border-radius: 10px;
+  transform: translateX(-50%);
+  transition: opacity .4s ease;
+}
+
+
+/* ---- Map frame --------------------------------------------------------- */
+.map-viewbox {
+  border: 3px white dotted;
+  display: flex;
+  /* The dotted frame hugs the map. It used to stretch past it, leaving empty
+     space inside the border that the map never filled. No shrinking either, or
+     flexbox squashes the frame and the map letterboxes inside it. */
+  min-height: 0;
+  flex: 0 0 auto;
+  border-radius: 15px;
+  /* Was `scroll`, which permanently reserved ~21px of scrollbar gutter on the
+     right and bottom. Pan and zoom are d3's job now, so that was dead space. */
+  overflow: hidden;
+  /* No inset: the map should reach the dotted border, not float inside it. */
+  padding: 0;
+  /* Set by SiteInteractions once it knows the map's proportions, so the frame
+     never grows taller than the column. The bar above uses the same value, and
+     border-box keeps the dotted border inside it so the two widths agree. */
+  width: var(--map-width, calc(100% - 46px));
+  box-sizing: border-box;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+}
+
+.zoomspace {
+  display: flex;
+  width: 100%;
+  /* Was 100%: that stretched the svg taller than its viewBox aspect ratio, so the
+     map got letterboxed inside it with empty bands above and below. */
+  height: auto;
+}
+
+.zoom-controls {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  padding: 0;
+  text-align: center;
+  justify-self: start;
+  align-self: flex-start;
+  /* Sit 20px inside the frame. This used to be a negative translate that relied on
+     .map-viewbox's 20px padding to land correctly; without that padding it pushed
+     the controls outside the border. */
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+button.zoom-button {
+  width: 45px;
+  height: 45px;
+  margin: 5px;
+  padding: 0px;
+  background: none;
+  background-color: var(--maintint);
+  border-radius: 15px;
+  font-size: 1.5rem;
+  box-shadow: 0px 5px 2px var(--main2tint),
+    0px 1px 1px rgba(255, 255, 255, 0.1) inset;
+  cursor: pointer;
+}
+
+
+/* ---- The map itself ---------------------------------------------------- */
+svg.map {
+  position: relative;
+  /* Keep the map's own proportions rather than being stretched by the flex row. */
+  height: auto;
+  display: block;
+}
+
+.map path {
+  position: absolute;
+  fill: var(--maintint);
+  stroke: black;
+  stroke-width: 1.5;
+  transition: 0.5s;
+}
+
+.map path.hovered,
+.map path:hover {
+  stroke: white;
+  stroke-dasharray: 10px;
+  stroke-width: 3px;
+  stroke-linecap: round;
+  stroke-linejoin: bevel;
+  transform: translateX(-50px), translateY(-25px);
+  filter: drop-shadow(0px 4px 7px rgba(0, 0, 0));
+  animation: dash 100s linear;
+  animation-fill-mode: forwards;
+  transition: 0.5;
+}
+
+/* House districts are far smaller than states, so the same stroke widths would
+   swamp them. */
+.housemap .map path {
+  position: absolute;
+  fill: var(--maintint);
+  stroke: black;
+  stroke-width: .25;
+  transition: 0.5s;
+}
+
+.housemap .map path.hovered,
+.housemap .map path:hover {
+  stroke: white;
+  stroke-dasharray: 10px;
+  stroke-width: .4px;
+  stroke-linecap: round;
+  stroke-linejoin: bevel;
+  transform: translateX(-50px), translateY(-25px);
+  /* Explicitly off, not just omitted: leaving it out lets the generic
+     `.map path.hovered` shadow cascade through. The other maps keep theirs. */
+  filter: none;
+  animation: dash 100s linear;
+  animation-fill-mode: forwards;
+  transition: 0.5;
+}
+
+/* Stroke widths are in user units, so they are multiplied by the zoom. By the top
+   couple of zoom steps the district borders and the white focus dashes have grown
+   thick enough to swamp the districts themselves, so thin them down there only.
+   Scoped to .housemap: the other maps are unaffected. */
+.housemap .map.deep-zoom path {
+  stroke-width: .1;
+}
+
+.housemap .map.deep-zoom path.hovered,
+.housemap .map.deep-zoom path:hover {
+  stroke-width: .15;
+  stroke-dasharray: 3px;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 1000;
+  }
+}
+
+
+/* ---- Result bar -------------------------------------------------------- */
+.results {
+  /* Matched to the map frame so the bar and the map share an edge. */
+  width: var(--map-width, 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.results-bar {
+  background-color: var(--main2tint);
+  border: 2px white outset;
+  border-radius: 15px;
+  height: 50px;
+  width: calc(100%);
+  display: flex;
+  overflow: hidden;
+  /* Anchors the seat counts and the centre marker below. */
+  position: relative;
+}
+
+/* Hairline marking the 50/50 point. */
+.results-bar::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  border-left: 2px dotted black;
+  transform: translateX(-1px);
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* Spans the whole bar so the two counts sit the same distance from each edge;
+   it used to be a 59%-wide box, which left them unevenly placed. */
+.result-counts {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.result-counts h2 {
+  font-size: 1.25rem;
+}
+
+/* Named by the model scripts - do not rename. */
+.DemBarcount {
+  position: relative;
+  z-index: 5;
+  padding: 5px 30px;
+  text-align: left;
+}
+
+.RepBarcount {
+  position: relative;
+  z-index: 5;
+  padding: 5px 30px;
+  text-align: right;
+}
+
+/* The sixteen probability bands, darkest blue through darkest red. Widths are
+   set by the model scripts; only the colours live here. */
+.color-segment:nth-child(1)  { background-color: rgb(0, 12, 65);    transition: 2s; }
+.color-segment:nth-child(2)  { background-color: rgb(19, 25, 109);  transition: 2s; }
+.color-segment:nth-child(3)  { background-color: rgb(24, 31, 121);  transition: 2s; }
+.color-segment:nth-child(4)  { background-color: rgb(41, 48, 141);  transition: 2s; }
+.color-segment:nth-child(5)  { background-color: rgb(63, 71, 167);  transition: 2s; }
+.color-segment:nth-child(6)  { background-color: rgb(95, 102, 197); transition: 2s; }
+.color-segment:nth-child(7)  { background-color: rgb(129, 135, 216);transition: 2s; }
+.color-segment:nth-child(8)  { background-color: rgb(173, 178, 242);transition: 2s; }
+.color-segment:nth-child(9)  { background-color: rgb(242, 173, 173);transition: 2s; }
+.color-segment:nth-child(10) { background-color: rgb(215, 128, 128);transition: 2s; }
+.color-segment:nth-child(11) { background-color: rgb(195, 93, 93);  transition: 2s; }
+.color-segment:nth-child(12) { background-color: rgb(163, 59, 59);  transition: 2s; }
+.color-segment:nth-child(13) { background-color: rgb(137, 37, 37);  transition: 2s; }
+.color-segment:nth-child(14) { background-color: rgb(121, 24, 24);  transition: 2s; }
+.color-segment:nth-child(15) { background-color: rgb(105, 15, 15);  transition: 2s; }
+.color-segment:nth-child(16) { background-color: rgb(65, 12, 0);    transition: 2s; }
+
+
+/* ---- View selector -----------------------------------------------------
+   One box showing a single section at a time. Model and Actual Results are
+   mutually exclusive, so they are two pages of one control with one shared
+   highlight rather than two independent lists. */
+.view-select {
+  width: 100%;
+}
+
+.view-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.view-title {
+  font-size: 1.15rem;
+  text-align: center;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.view-nav {
+  flex: 0 0 auto;
+  padding-inline: 8px;
+  height: 2rem;
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+/* The pages sit side by side and the track slides between them. Both stay in
+   flow, so the panel keeps one height whichever page is showing rather than
+   jumping when a page needs fewer rows. */
+.view-pages {
+  display: flex;
+  overflow: hidden;
+  align-items: stretch;
+  /* The selected button sits 2px lower and carries a 2px ring, both of which the
+     overflow above was clipping. This is the room they need. */
+  padding: 4px 0 8px;
+}
+
+.view-page {
+  flex: 0 0 100%;
+  min-width: 0;
+  transition: transform 0.25s ease;
+}
+
+/* Only the page on screen should be reachable. */
+.view-page[aria-hidden="true"] {
+  pointer-events: none;
+}
+
+/* Buttons fill the row and only wrap when they genuinely run out of width.
+   Scoped to .view-select, not .view-page, so the Governor map - which shows all
+   its buttons at once with no pages to flip - picks the same styling up. */
+.view-select .button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 0;
+}
+
+.view-select .button-container button {
+  padding-inline: 6px;
+  white-space: nowrap;
+}
+
+/* Which view you are actually looking at. Nothing showed this before. */
+.view-select .button-container button.is-selected {
+  background: linear-gradient(to bottom, var(--main3color), var(--maincolor));
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8),
+    0px 2px 3px rgba(0, 0, 0, 0.35) inset;
+  transform: translateY(2px);
+}
+
+
+/* ---- Rail panels ------------------------------------------------------- */
+/* Stacked in the desktop rail; two columns on a phone (see the media query). */
+.rail-pair {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.menu-panel {
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0px 5px 2px var(--main2tint),
+    0px 1px 1px rgba(255, 255, 255, 0.1) inset;
+  width: calc(100% - 50px);
+  margin: 10px;
+  height: auto;
+  background-color: var(--maincolor);
+}
+
+/* .inset-panel lives in base.css - the About page uses it too. */
+
+.projections {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  display: flex;
+}
+
+.projections .menu-panel {
+  width: 50%;
+  text-align: center;
+  padding-inline: 10px;
+}
+
+
+/* ---- Call a state ------------------------------------------------------
+   Pick a state, set a margin, and hand it to one party. */
+.call-state {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  gap: 15px;
+}
+
+.call-state select {
+  background: linear-gradient(to bottom, var(--maincolor), var(--main2color));
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  height: 2rem;
+  border: 0;
+  border-radius: 15px;
+  box-shadow: 0px -3px 1px var(--main2tint) inset,
+    0px 1px 1px rgba(255, 255, 255, 0.1) inset;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+}
+
+.call-state option {
+  font-family: inherit(select), "Josefin Sans", sans-serif;
+  background-color: var(--main2tint);
+  border: none;
+  color: black;
+  font-size: 15px;
+}
+
+.call-state h3 {
+  font-size: 1.25rem;
+}
+
+.call-button-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.call-button-box button {
+  width: 50%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  height: 3rem;
+  border: 0;
+}
+
+.call-button-box .callD {
+  background: linear-gradient(to bottom, var(--blue-4), var(--blue-5));
+  margin-right: 5px;
+}
+
+.call-button-box .callR {
+  background: linear-gradient(to bottom, var(--red-4), var(--red-5));
+  margin-left: 5px;
+}
+
+.call-button-box .callD:hover {
+  background: linear-gradient(to bottom, var(--blue-5), var(--blue-5));
+}
+
+.call-button-box .callR:hover {
+  background: linear-gradient(to bottom, var(--red-5), var(--red-5));
+}
+
+.call-button-box button p {
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.call-button-box button:hover p {
+  transform: translateY(3px);
+}
+
+/* The margin entry: a number box and a slider that mirror each other. */
+.margin-input {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding-block: 10px;
+}
+
+.margin-input input {
+  background: linear-gradient(to bottom, var(--maincolor), var(--main2color));
+  box-shadow: 0px 3px 1px var(--main2tint),
+    0px 1px 1px rgba(255, 255, 255, 0.1) inset;
+  width: 50%;
+  padding-inline: 15px;
+  height: 2rem;
+  border: 0;
+  border-radius: 15px;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+.margin-input button {
+  width: 50%;
+}
+
+
+/* =========================================================================
+   MOBILE - must stay last in this file. See the note at the top.
+   Everything below the map has to share one screen, so the panels get
+   tighter padding and smaller type rather than running off the bottom.
+   ========================================================================= */
+@media (max-width: 960px) {
+
+  /* Stacked, the fixed viewport height just leaves a tall gap under the map;
+     let the column grow to whatever its content needs instead. */
+  .dashboard {
+    flex-direction: column;
+    height: auto;
+    /* Stacked, the main axis is vertical - centring here would float the whole
+       dashboard down the page instead of sitting it under the nav. */
+    justify-content: flex-start;
+  }
+
+  /* Stop the map column stretching past the map and pushing the panels down.
+     Its side padding also goes, so the map can reach the screen edge; the
+     results bar keeps its own inset below. */
+  .dashboard-main {
+    flex: 0 0 auto;
+    /* Width-driven on a phone, not height-driven: fitFrame clears --map-width here. */
+    width: 100%;
+    order: 1;
+    gap: 8px;
+    padding: 6px 0 4px;
+  }
+
+  .dashboard-rail {
+    overflow-y: visible;
+    order: 2;
+  }
+
+  /* Map runs edge to edge on a phone - the side border and inset only cost
+     width that the map badly needs at this size. */
+  .map-viewbox {
+    width: 100%;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .results {
+    padding-inline: 10px;
+    box-sizing: border-box;
+  }
+
+  .results-bar {
+    height: 44px;
+  }
+
+  .result-counts {
+    width: calc(95% - 20px);
+    justify-self: center;
+    align-self: center;
+    flex-grow: 1;
+  }
+
+  /* ---- Rail: two columns under the view selector so the whole dashboard
+     fits one screen. ---- */
+  .rail-pair {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .rail-pair > * {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  /* .inset-panel gets the same treatment from base.css. */
+  .rail-pair .menu-panel {
+    padding: 8px;
+    margin: 4px;
+    width: calc(100% - 24px);
+  }
+
+  /* Projections read first, so put them on the left. */
+  .rail-pair .projections {
+    order: -1;
+    /* Stacked inside their own half rather than side by side. */
+    flex-direction: column;
+    /* Fill the panel rather than leaving dead space under the second box. */
+    justify-content: stretch;
+  }
+
+  /* Label beside its value instead of above it: "Chance Dem Win" and
+     "Projected EVs" each wrapped onto two lines in a half-width column, which
+     made this box the tallest thing on the page. */
+  .rail-pair .projections .menu-panel {
+    padding: 6px;
+    margin: 4px;
+    /* auto, not a calc: the box-shadow on a calc'd width pushed these past the
+       right edge of the panel holding them. */
+    width: auto;
+    flex: 1;
+    display: grid;
+    align-content: center;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    column-gap: 6px;
+    text-align: left;
+  }
+
+  .projections label p {
+    margin: 0;
+  }
+
+  .projections p {
+    font-size: 0.7rem;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .projections .buttontext {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  /* ---- View selector: two rows of four instead of tall stacks. ---- */
+  .view-select .button-container {
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .view-select .button-container button {
+    height: 1.8rem;
+    font-size: 0.85rem;
+  }
+
+  .view-title {
+    font-size: 0.95rem;
+  }
+
+  .view-nav {
+    height: 1.8rem;
+  }
+
+  /* ---- Call a state ---- */
+  .call-state {
+    gap: 5px;
+  }
+
+  .call-state select {
+    font-size: 1rem;
+    height: 2rem;
+    padding-block: 0;
+  }
+
+  .call-state h3 {
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  /* Dem/Rep were 158x60 with 30px type - too heavy for a phone. */
+  .call-button-box button {
+    height: 2.2rem;
+  }
+
+  .call-button-box button p {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  /* The number-entry group was the tallest single item in this column. */
+  .margin-input {
+    padding-block: 4px;
+    gap: 6px;
+  }
+
+  .margin-input input,
+  .margin-input button {
+    height: 1.8rem;
+  }
+
+  .margin-input-box p {
+    font-size: 0.65rem;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .slider {
+    margin: 0;
+  }
+}

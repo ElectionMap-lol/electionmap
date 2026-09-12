@@ -5,28 +5,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ElectionMap.lol :: House</title>
-  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/maps.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
 </head>
 
 <body class="app-container">
-  <div class="StateInfo">
+  <div class="tooltip-layer">
     <p id="details-box"></p>
   </div>
   <div>
-    <header class="top-header stripe">
-      <div class="left-box"></div>
-      <svg class="left-curve" xmlns="http://www.w3.org/2000/svg" viewBox="-2 0 13 12">
+    <header class="brand-header stripe">
+      <div class="brand-bar-blue"></div>
+      <svg class="brand-curve-blue" xmlns="http://www.w3.org/2000/svg" viewBox="-2 0 13 12">
         <path d="M -2 0 L 11 -0 C 10 -0 8 -0 7 4 L 6 8 C 5 12 3 12 2 12 L -2 12 L -2 0" />
       </svg>
-      <div class="e-m-title">
+      <div class="brand-title">
         <a href="https://github.com/ElectionMap-lol/electionmap"><h1>ElectionMap.lol</h1></a>
       </div>
-      <svg class="right-curve" xmlns="http://www.w3.org/2000/svg" viewBox="-11 -12 13 12">
+      <svg class="brand-curve-red" xmlns="http://www.w3.org/2000/svg" viewBox="-11 -12 13 12">
         <path d="M 2 0 L -11 0 C -10 0 -8 0 -7 -4 L -6 -8 C -5 -12 -3 -12 -2 -12 L 2 -12 L 2 0" />
       </svg>
-      <div class="right-box"></div>
+      <div class="brand-bar-red"></div>
     </header>
 
 <header class="nav-header">
@@ -47,54 +48,97 @@
   </a>
 </header>
 
-    <div class="maps-columns">
-      <div class="left-column stripe">
+    <div class="dashboard stripe">
+      <div class="dashboard-rail">
+
+        <!-- View selector: one control, one shared highlight. Only one view is
+             ever active, so the sections are pages of it rather than lists. -->
         <div class="inset-panel">
-          <div class="model-select">
-
-            <h2>Model</h2>
-            <div class="button-container" id="model">
-              <button id="2026 Model">
-                <p>2026</p>
-              </button>
-              <button id="2024 Model">
-               <p>2024</p>
-             </button>
+          <div class="view-select">
+            <div class="view-switch">
+              <button class="view-nav" id="viewPrev" type="button" aria-label="Previous section">&lsaquo;</button>
+              <h2 class="view-title" id="viewTitle">Model</h2>
+              <button class="view-nav" id="viewNext" type="button" aria-label="Next section">&rsaquo;</button>
             </div>
-
-            <h2>Actual Results</h2>
-            <div class="button-container" id="results">
-               <button id="Incumbents">
-                  <p>Incumbents</p>
-               </button>
-               <button id="2024 Actual Results">
-                  <p>House 2024</p>
-               </button>
-               <button id="2022 Actual Results">
-                  <p>House 2022</p>
-               </button>
-               <button id="2024 President Actual Results">
-                  <p>Pres. 2024</p>
-               </button>
-               <button id="2020 President Actual Results">
-                  <p>Pres. 2020</p>
-               </button>
-               <button id="2016 President Actual Results">
-                  <p>Pres. 2016</p>
-               </button>
-               <button id="2012 President Actual Results">
-                  <p>Pres. 2012</p>
-               </button>
+            <div class="view-pages" id="viewPages">
+              <div class="view-page" data-title="Model">
+                <div class="button-container">
+                  <button id="2026 Model" data-model="2026"> <p>2026</p> </button>
+                  <button id="2024 Model" data-model="2024"> <p>2024</p> </button>
+                </div>
+              </div>
+              <div class="view-page" data-title="House">
+                <div class="button-container">
+                  <button id="Incumbents" data-action="incumbent"> <p>Incumbents</p> </button>
+                  <button id="2024 Actual Results" data-results="2024"> <p>House 2024</p> </button>
+                  <button id="2022 Actual Results" data-results="2022"> <p>House 2022</p> </button>
+                </div>
+              </div>
+              <div class="view-page" data-title="Pres">
+                <div class="button-container">
+                  <button id="2024 President Actual Results" data-results="2024p"> <p>Pres. 2024</p> </button>
+                  <button id="2020 President Actual Results" data-results="2020p"> <p>Pres. 2020</p> </button>
+                  <button id="2016 President Actual Results" data-results="2016p"> <p>Pres. 2016</p> </button>
+                  <button id="2012 President Actual Results" data-results="2012p"> <p>Pres. 2012</p> </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-       <!--
-        <div class="menu-panel">
-          <p>settings box - WIP</p>
+
+        <!-- Side by side on a phone so both are on screen without scrolling. -->
+        <div class="rail-pair">
+          <div class="menu-panel">
+            <div class="call-state">
+                        <select id="stateDropDown"></select>
+                        <h3>Call state for:</h3>
+                        <div class="call-button-box">
+                          <button id="callButtonD" class="callD" data-action="callD">
+                            <p>Dem</p>
+                          </button>
+                          <button id="callButtonR" class="callR" data-action="callR">
+                            <p>Rep</p>
+                          </button>
+                        </div>
+            
+                        <div class="margin-input-box">
+                          <p>Enter a number between 0 and 100 (Dem win %)</p>
+                          <div class="margin-input">
+                            <input type="number" id="numberInput" name="numberInput" min="0" max="100" step="1" />
+                            <button id="enterButton" data-action="enter">Enter</button>
+                          </div>
+                          <input type="range" min="1" max="100" value="50" class="slider" id="sliderInput" name="numberInput" />
+                        </div>
+                      </div>
+          </div>
+
+          <div class="inset-panel projections">
+                    <div class="menu-panel">
+                      <label for="chanceOfDWinState">
+                        <p><strong>Chance Dem Majority</strong></p>
+                      </label>
+                      <p class="buttontext" id="chanceOfDWinState">0</p>
+                      <label for="projectedEVsD">
+                        <p><strong>Projected Seats</strong></p>
+                      </label>
+                      <p id="projectedEVsD">0</p>
+                    </div>
+                    <div class="menu-panel">
+                      <label for="chanceOfRWinState">
+                        <p><strong>Chance Rep Majority</strong></p>
+                      </label>
+                      <p class="buttontext" id="chanceOfRWinState">0</p>
+                      <label for="projectedEVsR">
+                        <p><strong>Projected Seats</strong></p>
+                      </label>
+                      <p id="projectedEVsR">0</p>
+                    </div>
+                  </div>
         </div>
-        -->
+
       </div>
-      <main class="center-column">
+
+      <main class="dashboard-main">
         <div class="results">
           <div class="results-bar">
             <div class="color-segment" style="width: 10%">&nbsp;</div>
@@ -113,26 +157,26 @@
             <div class="color-segment" style="width: 5%">&nbsp;</div>
             <div class="color-segment" style="width: 15%">&nbsp;</div>
             <div class="color-segment" style="width: 5%">&nbsp;</div>
-            <div class="Barcountbox">
-              <h2 class="DemBarcount">270</h2>
-              <h2 class="RepBarcount">270</h2>
-            </div>
+            <div class="result-counts">
+                          <h2 class="DemBarcount">270</h2>
+                          <h2 class="RepBarcount">270</h2>
+                        </div>
           </div>
         </div>
         <div class="map-viewbox">
-          <div class="buttonbox">
-            <button class="ZoomButton" id="Zoomin">
+          <div class="zoom-controls">
+            <button class="zoom-button" id="Zoomin">
               <p>+</p>
             </button>
-            <button class="ZoomButton" id="Zoomout">
+            <button class="zoom-button" id="Zoomout">
               <p>-</p>
             </button>
-            <button class="ZoomButton" id="Resetview">
+            <button class="zoom-button" id="Resetview">
               <p>↪</p>
             </button>
           </div>
           <div class="zoomspace housemap">
-            <svg style="scale: 90%" version="1.1" class="house-model map" xmlns:dc="http://purl.org/dc/elements/1.1/"
+            <svg version="1.1" class="house-model map" xmlns:dc="http://purl.org/dc/elements/1.1/"
                xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg"
                xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -422,7 +466,7 @@
                   d="M917.45,417.38l-3.081,0.349l0.174-0.639l-1.105,0.116l-0.407-1.221l-1.453,0.872l-0.756-0.116   l-0.814,0.581l-2.267,0.233l-2.558,0.698l-0.465-6.162l-0.233-3.139l-1.57-17.789l0.93-0.116l0.174,1.395l1.511-0.116l0.581,2.5   l0.581,0.523l-0.174,0.465l2.267,0.756h0.93l-0.174-0.988l0.93,0.174l1.395-0.233l0.058,0.465l1.221,0.349l0.116,1.918   l-3.197,0.291l0.349,4.476l0.523,1.163l-0.058,2.384l2.209-0.523l0.407,0.116l0.058,1.046l2.5,0.233l0.058,1.279l0.756-0.058   l0.058,0.523l2.442-0.291l-0.116-1.57l-1.163,0.116l0.233-1.628l-0.407-0.523l1.163-0.407l0.058,0.407l2.383-0.174l-0.116-1.512   l1.686,0.174l1.918-1.163l0.233-0.988l1.279,0.639l-0.058-0.756l1.57-0.174l-0.058-1.279l-0.814-0.233l-0.058-0.581l0.756-0.116   l-0.291-2.616l-0.756-0.349l-0.174-2.093l0.523,0.174l-0.174-0.988l1.105-0.465l-0.93-1.163l2.383-0.291l0.174,1.628l3.255-0.349   l0.174,1.57l0.698-0.058l-0.291,1.046l-1.628-0.407l-1.105,0.116l-0.698,1.337l1.511-0.174l0.233,2.442l0.465,0.639l-0.407,0.291   l1.628,1.279l0.639-0.814l3.255,0.233l2.79-0.174l0.058,0.581l0.814-0.639l1.57-0.174l0.523-1.395l0.523,0.465l2.383-0.407   l0.814,1.744l1.686-0.233l-0.407-0.93l-1.57-1.279l0.639-0.872l2.209-0.233l0.872,1.337l0.116,1.802l0.639-0.058l0.407,4.069   l0.174,1.628l-0.698-0.349l-2.442,0.233l-0.058,0.407l-1.628,0.174l-0.116-1.221l-0.639-0.988l-0.698-0.174l-1.977,0.116   l0.058,0.407l-1.744-0.058l-0.174,0.465l-1.395,0.291h-0.639l-0.058-0.756l-0.698-0.523l-0.814-1.512l-0.698,0.407l-2.5-0.756   l-0.349,0.291l-1.918-0.698l-0.407,0.581l0.116,1.337l-3.779,0.465l-0.174,1.221h-1.046l-0.291,1.686l-0.756,0.872l-0.058-0.698   l-3.255,0.291l0.116,1.57l0.349,0.639l-2.558,1.163l-0.698-0.058l-1.337,0.639v0.465l-0.872,0.349l0.233,1.57l0.116,2.035   L917.45,417.38z M522.58,182.46l-0.53,0.06l0.03-0.11l-0.19,0.02l-0.07-0.21l-0.25,0.15l-0.13-0.02l-0.14,0.1l-0.39,0.04   l-0.44,0.12l-0.08-1.06l-0.04-0.54l-0.27-3.06l0.16-0.02l0.03,0.24l0.26-0.02l0.1,0.43l0.1,0.09l-0.03,0.08l0.39,0.13h0.16   l-0.03-0.17l0.16,0.03l0.24-0.04l0.01,0.08l0.21,0.06l0.02,0.33l-0.55,0.05l0.06,0.77l0.09,0.2l-0.01,0.41l0.38-0.09l0.07,0.02   l0.01,0.18l0.43,0.04l0.01,0.22l0.13-0.01l0.01,0.09l0.42-0.05l-0.02-0.27l-0.2,0.02l0.04-0.28l-0.07-0.09l0.2-0.07l0.01,0.07   l0.41-0.03l-0.02-0.26l0.29,0.03l0.33-0.2l0.04-0.17l0.22,0.11l-0.01-0.13l0.27-0.03l-0.01-0.22l-0.14-0.04l-0.01-0.1l0.13-0.02   l-0.05-0.45l-0.13-0.06l-0.03-0.36l0.09,0.03l-0.03-0.17l0.19-0.08l-0.16-0.2l0.41-0.05l0.03,0.28l0.56-0.06l0.03,0.27l0.12-0.01   l-0.05,0.18l-0.28-0.07l-0.19,0.02l-0.12,0.23l0.26-0.03l0.04,0.42l0.08,0.11l-0.07,0.05l0.28,0.22l0.11-0.14l0.56,0.04l0.48-0.03   l0.01,0.1l0.14-0.11l0.27-0.03l0.09-0.24l0.09,0.08l0.41-0.07l0.14,0.3l0.29-0.04l-0.07-0.16l-0.27-0.22l0.11-0.15l0.38-0.04   l0.15,0.23l0.02,0.31l0.11-0.01l0.07,0.7l0.03,0.28l-0.12-0.06l-0.42,0.04l-0.01,0.07l-0.28,0.03l-0.02-0.21l-0.11-0.17l-0.12-0.03   l-0.34,0.02l0.01,0.07l-0.3-0.01l-0.03,0.08l-0.24,0.05h-0.11l-0.01-0.13l-0.12-0.09l-0.14-0.26l-0.12,0.07l-0.43-0.13l-0.06,0.05   l-0.33-0.12l-0.07,0.1l0.02,0.23l-0.65,0.08l-0.03,0.21h-0.18l-0.05,0.29l-0.13,0.15l-0.01-0.12l-0.56,0.05l0.02,0.27l0.06,0.11   l-0.44,0.2l-0.12-0.01l-0.23,0.11v0.08l-0.15,0.06l0.04,0.27l0.02,0.35L522.58,182.46z" />
                <path id="IL04" data-id="IL04" district="district"
                   d="M932.21,403.02l-0.116-1.337l0.407-0.581l1.918,0.698l0.349-0.291l2.5,0.756l0.698-0.407   l0.814,1.512l0.698,0.523l0.058,0.756h0.639l-0.581,1.57l-0.523,0.174l0.116,0.814l-1.977-0.116v-0.174l-3.197,0.291l-0.581,1.279   l-0.756-0.058l0.581,5.523l3.662-0.407l0.523,0.116v-1.046l2.035-0.233l-0.116-0.814l2.849-0.291l0.174-1.686l5.29-0.581   l0.233,2.325l4.244-1.744v-0.233l3.43-0.349l-0.058,1.744l0.465,4.476l-1.511,0.058l-1.221,0.523l-0.756,2.558l-1.337,0.349   l0.058,0.581l1.163-0.116l0.116,0.814l-0.814,0.058l0.058,0.814l-1.57,0.174l0.058,2.5l-1.395,0.116l0.058,0.814l-1.57,0.174   l-0.291-0.756l-2.965,0.349l-0.174-1.628l0.349-0.465l1.163-0.116l-0.058-0.407l3.197-0.407l-0.174-2.035l-2.442,0.291   l-0.233-2.035l0.814-0.116l-0.058-0.814l-2.79,0.349l-0.465,0.233l0.291,2.267l-0.349,0.349l-1.221-0.174l-0.988-0.872   l-2.209,0.407l-0.233-2.035l-1.628,0.407l-0.814-0.523l-0.233-1.686l-1.977,0.291l0.116,0.988l0.523,1.395l0.174,1.802   l-3.139,0.174l-0.116-0.756l-0.756,0.058l0.291-2.267l0.291-0.291l-0.639-0.872l-0.291-1.453l-0.872-0.639l-0.233-0.814   l0.814-0.116l-0.116-1.046l0.698-0.639l0.814-0.116l-0.233-1.628l-0.291-3.372l1.57-0.174L932.21,403.02z M525.12,179.99   l-0.02-0.23l0.07-0.1l0.33,0.12l0.06-0.05l0.43,0.13l0.12-0.07l0.14,0.26l0.12,0.09l0.01,0.13h0.11l-0.1,0.27l-0.09,0.03l0.02,0.14   l-0.34-0.02v-0.03l-0.55,0.05l-0.1,0.22l-0.13-0.01l0.1,0.95l0.63-0.07l0.09,0.02v-0.18l0.35-0.04l-0.02-0.14l0.49-0.05l0.03-0.29   l0.91-0.1l0.04,0.4l0.73-0.3v-0.04l0.59-0.06l-0.01,0.3l0.08,0.77l-0.26,0.01l-0.21,0.09l-0.13,0.44l-0.23,0.06l0.01,0.1l0.2-0.02   l0.02,0.14l-0.14,0.01l0.01,0.14l-0.27,0.03l0.01,0.43l-0.24,0.02l0.01,0.14l-0.27,0.03l-0.05-0.13l-0.51,0.06l-0.03-0.28   l0.06-0.08l0.2-0.02l-0.01-0.07l0.55-0.07l-0.03-0.35l-0.42,0.05l-0.04-0.35l0.14-0.02l-0.01-0.14l-0.48,0.06l-0.08,0.04l0.05,0.39   l-0.06,0.06l-0.21-0.03l-0.17-0.15l-0.38,0.07l-0.04-0.35l-0.28,0.07l-0.14-0.09l-0.04-0.29l-0.34,0.05l0.02,0.17l0.09,0.24   l0.03,0.31l-0.54,0.03l-0.02-0.13l-0.13,0.01l0.05-0.39l0.05-0.05l-0.11-0.15l-0.05-0.25l-0.15-0.11l-0.04-0.14l0.14-0.02   l-0.02-0.18l0.12-0.11l0.14-0.02l-0.04-0.28l-0.05-0.58l0.27-0.03L525.12,179.99z" />
-               <path id="IL05" data-id="IL5" district="district"
+               <path id="IL05" data-id="IL05" district="district"
                   d="M957.56,404.82l-0.988,0.523l-0.116-0.93l-0.872-0.756l0.058-0.581l-0.93-0.058l0.116,1.163   l-2.383,0.233l-0.116-0.814l-0.814,0.116l-0.407-4.069l-0.639,0.058l-0.116-1.802l-0.872-1.337l-2.209,0.233l-0.639,0.872   l1.57,1.279l0.407,0.93l-1.686,0.233l-0.814-1.744l-2.383,0.407l-0.523-0.465l-0.523,1.395l-1.57,0.174l-0.814,0.639l-0.058-0.581   l-2.79,0.174l-3.255-0.233l-0.639,0.814l-1.628-1.279l0.407-0.291l-0.465-0.639l-0.233-2.442l-1.511,0.174l0.698-1.337l1.105-0.116   l1.628,0.407l1.86,0.349l0.581,0.523v1.977l1.279,0.058v0.581l1.105-0.116l0.349-0.465l-0.174-1.977l-0.407-0.872l-1.511,0.174   l-1.453-2.267l-0.116-1.221l-0.523-0.349l-0.581-1.744l-0.988,0.116l-0.233-0.581l-0.756,0.233L931,389.124l-0.291,0.523   l-5.639,0.523l-0.872-0.93l-0.174-0.698l-0.756-9.708l-4.767,0.407l0.116,1.802l0.756-0.291l1.628-0.116l0.814,0.349l0.291,3.255   l-0.814,0.349l-1.57,0.058l0.058,0.988l-0.756,0.058l0.116,0.988l-1.279,0.291l0.058,0.698l1.163,0.349l0.233,0.872l-2.209,0.174   l0.465,0.988l-1.105,0.465v0.523l-1.686-0.291l-0.465-0.93l0.174-0.523l-0.291-3.081l-0.407-0.233l-0.233-1.105l0.523-0.465   l-4.36,0.407h-0.465l-0.639,1.395l-1.163,0.407l-1.163,0.116v0.407l-1.57,0.116l-0.581-6.918l3.139-0.233l-0.407-5.465l0.349-0.465   l0.872-0.058l1.046-0.756l5.988-0.407l1.046-0.581l0.872,0.116l0.523-0.581h0.698l0.233,2.442l4.36-0.349l0.116,1.57l1.221-0.058   l-0.174,1.628l0.698-0.058l0.116,1.628l0.581,0.116l-0.523,0.698l0.465,0.756l0.233,2.965l2.616,2.035l1.337,1.221l2.325-0.233   l1.221,0.756l0.174,0.814l2.209-0.174l0.581-0.988l0.756,0.872l0.698-0.058l0.174,2.442l0.872,0.349l-2.383,0.291l0.116,1.453   l1.453,0.93l0.174,0.639l1.686-0.174v0.581l1.221,0.058l0.058,0.349h1.337l0.639-0.523l-0.639-0.756l2.267-0.233v1.163l0.814,0.407   l2.849-0.233v0.814l3.604-0.407l-0.233,1.686l-0.756,0.116l0.058,0.581h1.86l0.465,1.57l1.104,0.291l0.64-0.465l0.698,1.279   l0.756,2.79l0.64,0.407l-0.407,0.349l0.349,0.93L957.56,404.82z M529.48,180.3l-0.17,0.09l-0.02-0.16l-0.15-0.13l0.01-0.1   l-0.16-0.01l0.02,0.2l-0.41,0.04l-0.02-0.14l-0.14,0.02l-0.07-0.7l-0.11,0.01l-0.02-0.31l-0.15-0.23l-0.38,0.04l-0.11,0.15   l0.27,0.22l0.07,0.16l-0.29,0.04l-0.14-0.3l-0.41,0.07l-0.09-0.08l-0.09,0.24l-0.27,0.03l-0.14,0.11l-0.01-0.1l-0.48,0.03   l-0.56-0.04l-0.11,0.14l-0.28-0.22l0.07-0.05l-0.08-0.11l-0.04-0.42l-0.26,0.03l0.12-0.23l0.19-0.02l0.28,0.07l0.32,0.06l0.1,0.09   v0.34l0.22,0.01v0.1l0.19-0.02l0.06-0.08l-0.03-0.34l-0.07-0.15l-0.26,0.03l-0.25-0.39l-0.02-0.21l-0.09-0.06l-0.1-0.3l-0.17,0.02   l-0.04-0.1l-0.13,0.04l-0.17-0.08l-0.05,0.09l-0.97,0.09l-0.15-0.16l-0.03-0.12l-0.13-1.67l-0.82,0.07l0.02,0.31l0.13-0.05   l0.28-0.02l0.14,0.06l0.05,0.56l-0.14,0.06l-0.27,0.01l0.01,0.17l-0.13,0.01l0.02,0.17l-0.22,0.05l0.01,0.12l0.2,0.06l0.04,0.15   l-0.38,0.03l0.08,0.17l-0.19,0.08v0.09l-0.29-0.05l-0.08-0.16l0.03-0.09l-0.05-0.53l-0.07-0.04l-0.04-0.19l0.09-0.08l-0.75,0.07   h-0.08l-0.11,0.24l-0.2,0.07l-0.2,0.02v0.07l-0.27,0.02l-0.1-1.19l0.54-0.04l-0.07-0.94l0.06-0.08l0.15-0.01l0.18-0.13l1.03-0.07   l0.18-0.1l0.15,0.02l0.09-0.1h0.12l0.04,0.42l0.75-0.06l0.02,0.27l0.21-0.01l-0.03,0.28l0.12-0.01l0.02,0.28l0.1,0.02l-0.09,0.12   l0.08,0.13l0.04,0.51l0.45,0.35l0.23,0.21l0.4-0.04l0.21,0.13l0.03,0.14l0.38-0.03l0.1-0.17l0.13,0.15l0.12-0.01l0.03,0.42   l0.15,0.06l-0.41,0.05l0.02,0.25l0.25,0.16l0.03,0.11l0.29-0.03v0.1l0.21,0.01l0.01,0.06h0.23l0.11-0.09l-0.11-0.13l0.39-0.04v0.2   l0.14,0.07l0.49-0.04v0.14l0.62-0.07l-0.04,0.29l-0.13,0.02l0.01,0.1h0.32l0.08,0.27l0.19,0.05l0.11-0.08l0.12,0.22l0.13,0.48   l0.11,0.07l-0.07,0.06l0.06,0.16L529.48,180.3z" />
                <path id="IL06" data-id="IL06" district="district"
                   d="M932.21,403.02l0.233,2.732l-1.57,0.174l0.291,3.372l0.233,1.628l-0.814,0.116l-0.698,0.639   l0.116,1.046l-0.814,0.116l0.233,0.814l0.872,0.639l0.291,1.453l0.639,0.872l-0.291,0.291l-0.291,2.267l0.756-0.058l0.116,0.756   l3.139-0.174l-0.174-1.802l-0.523-1.395l-0.116-0.988l1.977-0.291l0.233,1.686l0.814,0.523l1.628-0.407l0.233,2.035l2.209-0.407   l0.988,0.872l1.221,0.174l0.349-0.349l-0.291-2.267l0.465-0.233l2.79-0.349l0.058,0.814l-0.814,0.116l0.233,2.035l2.442-0.291   l0.174,2.035l-3.197,0.407l0.058,0.407l-1.163,0.116l-0.349,0.465l0.174,1.628l2.965-0.349l0.291,0.756l1.57-0.174l-0.058-0.814   l1.395-0.116l1.802-0.233l0.174,1.628l0.465-0.058l0.407,0.756l0.814-0.058l-0.291-2.442l0.814-0.058l0.465,0.581l0.058,3.43   l-0.814,0.523l0.116,1.221l-0.349,0.872l-1.919,0.174l-0.523-0.756l0.291-0.872l-2.383,0.291l0.116,0.814l0.756-0.116l0.116,0.814   l0.814-0.058l0.349,3.197l-1.57,0.233l0.116,0.93l-0.814,0.291l0.058,0.465l-0.814,0.116l0.523,1.337l-0.349-0.058l0.349,3.372   l-1.453,1.337l0.116,2.325l-6.627,0.698l0.233-1.686l-1.57,0.174l-0.116-0.814l-0.814,0.116l-0.058-0.814l-0.814,0.058   l-0.174-1.628l-1.57,0.174l-0.814-7.267l-0.698-6.453l-4.593,0.523l-0.291-0.93l-1.511,0.872l-0.058-0.581l-1.57,0.174   l-0.291-2.442l-1.163,0.174l-0.523-1.628l-0.581,0.058l-0.581-0.698l0.465-0.058l-0.058-0.814l-1.395,0.174l0.058,0.639   l-1.221-0.116l-0.291-0.93l-0.523-0.174l0.174,0.872L920,421.385l-0.465-1.046l-0.698,0.058l-0.407-1.163l-0.523,0.116   l-0.174-1.046l-0.639,0.116l0.349-1.046l0.756-2.151l-0.116-2.035l-0.233-1.57l0.872-0.349v-0.465l1.337-0.639l0.698,0.058   l2.558-1.163l-0.349-0.639l-0.116-1.57l3.255-0.291l0.058,0.698l0.756-0.872l0.291-1.686h1.046l0.174-1.221L932.21,403.02z    M525.12,179.99l0.04,0.47l-0.27,0.03l0.05,0.58l0.04,0.28l-0.14,0.02l-0.12,0.11l0.02,0.18l-0.14,0.02l0.04,0.14l0.15,0.11   l0.05,0.25l0.11,0.15l-0.05,0.05l-0.05,0.39l0.13-0.01l0.02,0.13l0.54-0.03l-0.03-0.31l-0.09-0.24l-0.02-0.17l0.34-0.05l0.04,0.29   l0.14,0.09l0.28-0.07l0.04,0.35l0.38-0.07l0.17,0.15l0.21,0.03l0.06-0.06l-0.05-0.39l0.08-0.04l0.48-0.06l0.01,0.14l-0.14,0.02   l0.04,0.35l0.42-0.05l0.03,0.35l-0.55,0.07l0.01,0.07l-0.2,0.02l-0.06,0.08l0.03,0.28l0.51-0.06l0.05,0.13l0.27-0.03l-0.01-0.14   l0.24-0.02l0.31-0.04l0.03,0.28l0.08-0.01l0.07,0.13l0.14-0.01l-0.05-0.42l0.14-0.01l0.08,0.1l0.01,0.59l-0.14,0.09l0.02,0.21   l-0.06,0.15l-0.33,0.03l-0.09-0.13l0.05-0.15l-0.41,0.05l0.02,0.14l0.13-0.02l0.02,0.14l0.14-0.01l0.06,0.55l-0.27,0.04l0.02,0.16   l-0.14,0.05l0.01,0.08l-0.14,0.02l0.09,0.23l-0.06-0.01l0.06,0.58l-0.25,0.23l0.02,0.4l-1.14,0.12l0.04-0.29l-0.27,0.03l-0.02-0.14   l-0.14,0.02l-0.01-0.14l-0.14,0.01l-0.03-0.28l-0.27,0.03l-0.14-1.25l-0.12-1.11l-0.79,0.09l-0.05-0.16l-0.26,0.15l-0.01-0.1   l-0.27,0.03l-0.05-0.42l-0.2,0.03l-0.09-0.28l-0.1,0.01l-0.1-0.12l0.08-0.01l-0.01-0.14l-0.24,0.03l0.01,0.11l-0.21-0.02L523.2,183   l-0.09-0.03l0.03,0.15l-0.12,0.03l-0.08-0.18l-0.12,0.01l-0.07-0.2l-0.09,0.02l-0.03-0.18l-0.11,0.02l0.06-0.18l0.13-0.37   l-0.02-0.35l-0.04-0.27l0.15-0.06v-0.08l0.23-0.11l0.12,0.01l0.44-0.2l-0.06-0.11l-0.02-0.27l0.56-0.05l0.01,0.12l0.13-0.15   l0.05-0.29h0.18l0.03-0.21L525.12,179.99z" />
@@ -1042,58 +1086,12 @@
           </div>
         </div>
       </main>
-      <div class="right-column stripe">
-        <div class="menu-panel">
-          <div class="wincall-select">
-            <select id="stateDropDown"></select>
-            <h3>Call state for:</h3>
-            <div class="call-button-box">
-              <button id="callButtonD" class="callD">
-                <p>Dem</p>
-              </button>
-              <button id="callButtonR" class="callR">
-                <p>Rep</p>
-              </button>
-            </div>
-
-            <div class="winput-box">
-              <p>Enter a number between 0 and 100 (Dem win %)</p>
-              <div class="winput-number">
-                <input type="number" id="numberInput" name="numberInput" min="0" max="100" step="1" />
-                <button id="enterButton">Enter</button>
-              </div>
-              <input type="range" min="1" max="100" value="50" class="slider" id="sliderInput" name="numberInput" />
-            </div>
-          </div>
-        </div>
-        <div class="inset-panel projections">
-          <div class="menu-panel">
-            <label for="chanceOfDWinState">
-              <p><strong>Chance Dem Majority</strong></p>
-            </label>
-            <p class="buttontext" id="chanceOfDWinState">0</p>
-            <label for="projectedEVsD">
-              <p><strong>Projected Seats</strong></p>
-            </label>
-            <p id="projectedEVsD">0</p>
-          </div>
-          <div class="menu-panel">
-            <label for="chanceOfRWinState">
-              <p><strong>Chance Rep Majority</strong></p>
-            </label>
-            <p class="buttontext" id="chanceOfRWinState">0</p>
-            <label for="projectedEVsR">
-              <p><strong>Projected Seats</strong></p>
-            </label>
-            <p id="projectedEVsR">0</p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
+
   <script src="../SiteInteractions.js"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
-  <script src="./HouseModel2.js"></script>
+  <script src="./HouseModel.js"></script>
 </body>
 
 </html>
