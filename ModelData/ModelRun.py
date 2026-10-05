@@ -94,6 +94,12 @@ def runPresidentialModel(electionData, year):
                 shift2 = neutral2020 - neutral2016
                 neutralProjectedOnShift = neutral2024 + ((shift1 + shift2) / 2)     
 
+            if (d.State == "Florida" or d.State == "Wisconsin" or d.State == "Kansas"):
+                print ("====" + str(d.State) + "====")
+                print(shift1)
+                print(shift2)
+                print ((shift1 + shift2) / 2)   
+                print ("Expected State's neutral environment for " + str(year) + ": " + str(neutralProjectedOnShift))
             
             # Get projected shift based on polls, and then average that with the neutralProjectedOnShift
             if statePolls != None :
@@ -239,7 +245,7 @@ def runSenateModel(electionData, year):
     elif (year == '2024'):
         pollingA = -.3   
     elif (year == '2026'):
-        pollingA = 9.3
+        pollingA = 9.6
     maxDemocratResult = pollingA + pollingError
     maxRepublicanResult = pollingA - pollingError
     for d in electionData : 
@@ -526,7 +532,7 @@ def runHouseModel (electionData, year) :
     if (year == '2024'):
         pollingAverage = .27
     elif (year == '2026'):
-        pollingAverage = 9.3
+        pollingAverage = 9.6
 
     maxDemocratResult = pollingAverage + pollingError
     maxRepublicanResult = pollingAverage - pollingError
