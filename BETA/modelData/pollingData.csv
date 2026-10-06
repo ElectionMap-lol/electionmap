@@ -1,4 +1,6 @@
-race,date,pollster,DPer,RPer,Oper
+state,date,pollster,DPer,RPer,Oper,race
+GB,9/21/2026,KFF,45,35,0
+GB,10/4/2026,Morning_Consult,50,43,0
 GB,9/21/2026,Impact_Research,50,42,0
 GB,9/22/2026,Argument,55,45,0
 GB,9/27/2026,Quinnipiac,51,39,0
@@ -38,3 +40,14 @@ GB,8/24/2026,IPSOS,41,35,0
 GB,8/16/2026,Noble,47,32,0
 GB,8/17/2026,Emerson,51,43,0
 GB,8/17/2026,Echelon,50,45,0
+GA,10/3/2026,Wedgewood,55,45,0,Senate
+GA,9/23/2026,InsiderAdvantage,50,42,0,Senate
+GA,9/23/2026,Big_Data,55,45,0,Senate
+GA,9/18/2026,YouGov,52,42,0,Senate
+GA,9/16/2026,Quantus,49,45,0,Senate
+AK,9/30/2026,Siena,50,43,0,Senate
+AK,9/30/2026,Quantus,46,47,0,Senate
+AK,9/12/2026,Alaska_Survey_Research,52,48,0,Senate
+AK,9/11/2026,Impact/Fabrizio,53,47,0,Senate
+AK,8/23/2026,Alaska_Survey_Research,51,49,0,Senate
+
