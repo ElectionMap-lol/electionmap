@@ -42,6 +42,21 @@ GB,8/17/2026,Emerson,51,43,0
 GB,8/17/2026,Echelon,50,45,0
 GA,10/3/2026,Wedgewood,55,45,0,Senate
 GA,9/23/2026,InsiderAdvantage,50,42,0,Senate
+AL,9/25/2026,RMG,33,54,0,Senate
+ID,9/30/2026,Peak_Insights,24,49,0,Senate
+ID,9/16/2026,Adv_Targ,46,39,0,Senate
+IL,9/1/2026,PPP,49,36,0,Senate
+MA,9/22/2026,MassInc,54,28,0,Senate
+MA,9/21/2026,UNH,53,30,0,Senate
+MS,9/13/2026,Data_for_Progress,38,44,0,Senate
+MT,9/24/2026,American_Pulse,19,45,26,Senate
+MT,9/15/2026,Quantus,24,45,26,Senate
+MT,9/7/2026,Rutgers,16,30,38,Senate
+MT,8/25/2026,Peak_Insights,19,22,44,Senate
+RI,9/21/2026,UNH,53,33,0,Senate
+SD,9/30/2026,Lake_Research,51,42,0,Senate
+SD,9/27/2026,Zenith,38,44,0,Senate
+SD,9/9/2026,PPP,42,45,0,Senate
 GA,9/23/2026,Big_Data,55,45,0,Senate
 GA,9/18/2026,YouGov,52,42,0,Senate
 GA,9/16/2026,Quantus,49,45,0,Senate
@@ -141,3 +156,4 @@ TX,9/13/2026,Socal,50,45,0,Senate
 TX,9/9/2026,InsiderAdvantage,47,46,0,Senate
 TX,9/1/2026,Fabrizio,48,44,0,Senate
 TX,9/4/2026,YouGov,48,43,0,Senate
+TN,8/26/2026,Targoz,31,51,0,Senate
