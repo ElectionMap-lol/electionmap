@@ -1,0 +1,438 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap");
+
+/* =========================================================================
+   BASE - loaded by every page.
+   Tokens, element defaults, the brand header, the nav bar, and the two
+   simple page layouts (About, Polls).
+
+   Every mobile override for the things in this file lives in the @media
+   block at the BOTTOM. Nothing may be added after it: a rule placed below
+   the media query wins on source order and silently kills the override.
+   Map-page rules belong in maps.css, which has its own media block.
+   ========================================================================= */
+
+
+/* ---- Tokens ------------------------------------------------------------ */
+:root {
+  /* Main site colors. --maincolor and its two tints are rewritten at runtime
+     by paintResultBackground() in SiteInteractions.js, which slides the page
+     between blue and red as the map's result changes. */
+  --maincolor: #483d55;
+  --main2color: rgb(65, 56, 75);
+  --main3color: rgb(52, 44, 60);
+
+  /* --maincolor plus --maintint equals --main2color */
+  --maintint: rgba(0, 0, 0, 0.1);
+
+  /* --maincolor plus --main2tint equals --main3color */
+  /* main shadow color also */
+  --main2tint: rgba(0, 0, 0, 0.275);
+
+  /* Blue shades */
+  --blue-1: rgb(173, 178, 242);
+  --blue-2: rgb(129, 135, 216);
+  --blue-3: rgb(95, 102, 197);
+  --blue-4: rgb(63, 71, 167);
+  --blue-5: #29308d;
+
+  /* Red shades */
+  --red-1: rgb(242, 173, 173);
+  --red-2: rgb(215, 128, 128);
+  --red-3: rgb(195, 93, 93);
+  --red-4: rgb(163, 59, 59);
+  --red-5: #892525;
+
+  font-size: 20px;
+  color: white;
+}
+
+
+/* ---- Element defaults -------------------------------------------------- */
+body {
+  height: 100vh;
+  user-select: none;
+}
+
+p {
+  font-size: 1rem;
+  margin: 0%;
+}
+
+h1 {
+  font-size: 3rem;
+  margin: 0%;
+}
+
+h2 {
+  font-size: 2rem;
+  margin: 0%;
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin: 0%;
+}
+
+hr {
+  height: 0px;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  background: linear-gradient(to bottom, var(--maincolor), var(--main2color));
+  box-shadow: 0px 3px 1px var(--main2tint),
+    0px 1px 1px rgba(255, 255, 255, 0.1) inset;
+  padding-inline: 15px;
+  height: 2rem;
+  border: 0;
+  border-radius: 15px;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 1rem;
+  color: white;
+}
+
+button:hover {
+  background: linear-gradient(to bottom, var(--maincolor), var(--main3color));
+  box-shadow: 0px 3px 1px var(--main2tint) inset,
+    0px 1px 1px rgba(255, 255, 255, 0.1);
+  transform: translateY(3px);
+}
+
+button:active {
+  background: linear-gradient(to bottom, var(--main2color), var(--main3color));
+  box-shadow: 0px 3px 1px var(--main2tint) inset,
+    0px 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.app-container {
+  font-family: "Josefin Sans", sans-serif;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--maincolor);
+  margin: 0;
+  padding: 0%;
+}
+
+
+/* ---- Brand header ------------------------------------------------------
+   The title bar: a blue block and a red block running to the screen edges,
+   each capped by an SVG curve, with the site title between them. The colours
+   are decorative - they carry no result data - so they are named for the
+   colour they are, not for a party. */
+.brand-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 75px;
+  z-index: 5;
+}
+
+.brand-header h1 {
+  text-align: center;
+  flex-grow: 1;
+  margin: 0;
+  color: white;
+  transform: translateY(4px);
+  z-index: 5;
+}
+
+.brand-title {
+  padding-inline: 100px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+}
+
+.brand-title h1 {
+  font-size: 2.5rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+}
+
+.brand-bar-blue {
+  height: 100%;
+  width: 100%;
+  background-color: var(--blue-5);
+}
+
+.brand-curve-blue {
+  z-index: 10;
+  height: 75px;
+  min-width: 81px;
+  fill: var(--blue-5);
+  filter: drop-shadow(15px 0px 0px var(--blue-4)) drop-shadow(20px 0px 0px var(--blue-3)) drop-shadow(25px 0px 0px var(--blue-2)) drop-shadow(30px 0px 0px var(--blue-1));
+  transition: 0.5s;
+}
+
+.brand-header:hover .brand-curve-blue {
+  filter: drop-shadow(30px 0px 0px var(--blue-4)) drop-shadow(30px 0px 0px var(--blue-3)) drop-shadow(30px 0px 0px var(--blue-2)) drop-shadow(30px 0px 0px var(--blue-1));
+  transition: 0.5s;
+}
+
+.brand-bar-red {
+  height: 100%;
+  width: 100%;
+  background-color: var(--red-5);
+}
+
+.brand-curve-red {
+  z-index: 10;
+  height: 75px;
+  min-width: 81px;
+  fill: var(--red-5);
+  filter: drop-shadow(-15px 0px 0px var(--red-4)) drop-shadow(-20px 0px 0px var(--red-3)) drop-shadow(-25px 0px 0px var(--red-2)) drop-shadow(-30px 0px 0px var(--red-1));
+  transition: 0.5s;
+}
+
+.brand-header:hover .brand-curve-red {
+  filter: drop-shadow(-30px 0px 0px var(--red-4)) drop-shadow(-30px 0px 0px var(--red-3)) drop-shadow(-30px 0px 0px var(--red-2)) drop-shadow(-30px 0px 0px var(--red-1));
+  transition: 0.5s;
+}
+
+
+/* ---- Nav bar ----------------------------------------------------------- */
+.nav-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  padding: 0%;
+  background: var(--main2color);
+  box-shadow: 0px 0px 15px 5px var(--main2tint) inset;
+  z-index: 6;
+}
+
+.nav-button {
+  height: 50px;
+  padding: 0 45px;
+  font-family: "Josefin Sans", sans-serif;
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  transition: 0.15s;
+}
+
+.nav-button:hover {
+  box-shadow: inset 0px 0px 15px var(--main2tint);
+  transition: 0.15s;
+}
+
+.nav-button p {
+  font-size: 1.25rem;
+  transform: translateY(2px);
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropbtn {
+  background: none;
+  border: none;
+  color: white;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 1.25rem;
+  height: 50px;
+  padding: 0 45px;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  min-width: 100%;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  /* drop shadow */
+  overflow: hidden;
+  z-index: 10;
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.dropdown-content a:hover {
+  background-color: var(--maintint);
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+
+/* ---- Decorative -------------------------------------------------------- */
+.stripe {
+  background-image: repeating-linear-gradient(-45deg,
+      transparent,
+      transparent 1rem,
+      #00000015 1rem,
+      #00000010 2rem);
+  background-size: 150vw 150vh;
+  animation: barberpole 100s linear infinite;
+}
+
+@keyframes barberpole {
+  100% {
+    background-position: 100% 100%;
+    backdrop-filter: blur(5px);
+  }
+}
+
+
+/* ---- Panels ------------------------------------------------------------
+   .inset-panel is shared: the map pages use it for the view selector, and
+   the About page wraps its text in one. Its sibling .menu-panel is only ever
+   used on the map pages, so that one lives in maps.css. */
+.inset-panel {
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0px 5px 1px var(--main2tint) inset,
+    0px -1px 5px rgba(255, 255, 255, 0.1);
+  width: calc(100% - 50px);
+  margin: 10px;
+  height: auto;
+  background-color: var(--maintint);
+  backdrop-filter: blur(3px);
+}
+
+
+/* ---- About page -------------------------------------------------------- */
+.about-columns {
+  display: flex;
+  height: calc(100vh - 125px);
+}
+
+.about-columns a {
+  color: rgb(255, 255, 255);
+  text-decoration: underline solid white;
+}
+
+.about-columns .left-column {
+  flex: 0 0 30%;
+  background-color: var(--main2color);
+}
+
+.about-columns .center-column {
+  flex: 1;
+  background-color: var(--maincolor);
+  padding: 20px;
+  box-shadow: 0px 0px 5px var(--main2tint);
+  overflow-y: scroll;
+  height: calc(100vh - 170px);
+  text-align: center;
+}
+
+.about-columns .right-column {
+  flex: 0 0 30%;
+  background-color: var(--main2color);
+}
+
+
+/* ---- Polls page -------------------------------------------------------- */
+.two-column-layout {
+  display: flex;
+  height: calc(100vh - 125px);
+}
+
+.two-column-layout .left-column {
+  flex: 0 0 40%;
+  background-color: var(--main2color);
+}
+
+.two-column-layout .right-column {
+  flex: 1;
+  background-color: var(--maincolor);
+  padding: 20px;
+  box-shadow: 0px 0px 5px var(--main2tint);
+}
+
+
+/* =========================================================================
+   MOBILE - must stay last in this file. See the note at the top.
+   ========================================================================= */
+@media (max-width: 960px) {
+
+  /* The brand bar and nav cost 125px of an 812px screen before any content;
+     trimming them buys back most of what the dashboard needs to fit. */
+  .brand-header {
+    height: 52px;
+  }
+
+  .brand-title {
+    padding-inline: 0px;
+  }
+
+  .brand-title h1 {
+    font-size: 1.5rem;
+  }
+
+  /* No room for the flanking colour blocks next to a full-width title. */
+  .brand-bar-blue,
+  .brand-curve-blue,
+  .brand-header:hover .brand-curve-blue,
+  .brand-bar-red,
+  .brand-curve-red,
+  .brand-header:hover .brand-curve-red {
+    display: none;
+  }
+
+  .nav-header {
+    height: 38px;
+  }
+
+  /* Tighter on a phone. maps.css gives .rail-pair .menu-panel the same. */
+  .inset-panel {
+    padding: 8px;
+    margin: 4px;
+    width: calc(100% - 24px);
+  }
+
+  /* ---- About page ---- */
+  .about-columns {
+    display: flex;
+  }
+
+  .about-columns .left-column,
+  .about-columns .right-column {
+    display: none;
+  }
+
+  .about-columns .center-column {
+    width: 100%;
+  }
+
+  /* ---- Polls page ---- */
+  .two-column-layout {
+    flex-direction: column;
+  }
+
+  .two-column-layout .left-column {
+    height: calc(50% - 20px);
+    overflow-y: auto;
+  }
+
+  .two-column-layout .right-column {
+    height: 50%;
+  }
+}

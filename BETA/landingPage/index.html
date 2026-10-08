@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElectionMap.lol :: Forecasts</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/landing.css" />
+</head>
+
+<body class="app-container">
+  <div>
+    <header class="brand-header stripe">
+      <div class="brand-bar-blue"></div>
+      <svg class="brand-curve-blue" xmlns="http://www.w3.org/2000/svg" viewBox="-2 0 13 12">
+        <path d="M -2 0 L 11 -0 C 10 -0 8 -0 7 4 L 6 8 C 5 12 3 12 2 12 L -2 12 L -2 0" />
+      </svg>
+      <div class="brand-title">
+        <a href="https://github.com/ElectionMap-lol/electionmap"><h1>ElectionMap.lol</h1></a>
+      </div>
+      <svg class="brand-curve-red" xmlns="http://www.w3.org/2000/svg" viewBox="-11 -12 13 12">
+        <path d="M 2 0 L -11 0 C -10 0 -8 0 -7 -4 L -6 -8 C -5 -12 -3 -12 -2 -12 L 2 -12 L 2 0" />
+      </svg>
+      <div class="brand-bar-red"></div>
+    </header>
+
+<header class="nav-header">
+  <div class="dropdown">
+    <div class="nav-button dropbtn">Polling ▾</div>
+    <div class="dropdown-content">
+      <a aria-disabled="true">Coming soon</a>
+    </div>
+  </div>
+
+  <div class="dropdown">
+    <div class="nav-button dropbtn">Forecasts ▾</div>
+    <div class="dropdown-content">
+      <a href="../../house/index.html">2026 House</a>
+      <a href="../../senate/index.html">2026 Senate</a>
+      <a href="../../governor/index.html">2026 Governor</a>
+      <a href="../../index.html">2028 President (Sneak Peek)</a>
+    </div>
+  </div>
+
+  <div class="dropdown">
+    <div class="nav-button dropbtn">Results ▾</div>
+    <div class="dropdown-content">
+      <a href="../../index.html">2024 President</a>
+      <a href="../../house/index.html">2024 House</a>
+      <a href="../../senate/index.html">2024 Senate</a>
+      <a href="../../governor/index.html">Governors</a>
+    </div>
+  </div>
+
+  <a href="../../about/index.html">
+    <div class="nav-button">
+      <p>About</p>
+    </div>
+  </a>
+</header>
+
+    <main class="landing-dashboard stripe">
+      <section class="preview-card house-card" aria-labelledby="house-title">
+        <h2 id="house-title">2026 House Forecast</h2>
+        <div class="house-preview">
+          <div class="house-chart">
+            <div class="half-pie-window" role="img" aria-label="Temporary Democratic and Republican forecast chart">
+              <div class="half-pie"></div>
+            </div>
+            <div class="chart-legend" aria-hidden="true">
+              <span><i class="legend-dot dem-dot"></i>Democratic</span>
+              <span><i class="legend-dot rep-dot"></i>Republican</span>
+            </div>
+          </div>
+          <div class="control-odds" aria-label="House control odds">
+            <h3>Current Odds</h3>
+            <div class="odds-row">
+              <span><i class="legend-dot dem-dot"></i>Democratic Control</span>
+              <strong id="houseDemOdds">--%</strong>
+            </div>
+            <div class="odds-row">
+              <span><i class="legend-dot rep-dot"></i>Republican Control</span>
+              <strong id="houseRepOdds">--%</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-card" aria-labelledby="senate-title">
+        <h2 id="senate-title">2026 Senate Forecast</h2>
+        <div class="map-preview" role="img" aria-label="United States Senate map preview; map coming soon">
+          <span>U.S. map preview</span>
+        </div>
+        <div class="control-odds compact-odds" aria-label="Senate control odds">
+          <div class="odds-row">
+            <span><i class="legend-dot dem-dot"></i>Democratic Control</span>
+            <strong id="senateDemOdds">--%</strong>
+          </div>
+          <div class="odds-row">
+            <span><i class="legend-dot rep-dot"></i>Republican Control</span>
+            <strong id="senateRepOdds">--%</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="preview-card" aria-labelledby="governor-title">
+        <h2 id="governor-title">2026 Governor Forecast</h2>
+        <div class="map-preview governor-map" role="img" aria-label="United States governor map preview; map coming soon">
+          <span>U.S. map preview</span>
+        </div>
+      </section>
+
+      <section class="preview-card" aria-labelledby="ballot-title">
+        <h2 id="ballot-title">Generic Ballot Average</h2>
+        <div class="line-chart" role="img" aria-label="Generic ballot trend preview">
+          <div class="chart-y-labels" aria-hidden="true"><span>R</span><span>50</span><span>D</span></div>
+          <svg viewBox="0 0 480 180" preserveAspectRatio="none" aria-hidden="true">
+            <path class="chart-gridline" d="M0 30H480 M0 90H480 M0 150H480" />
+            <path class="chart-trend" d="M0 112 C55 104 65 129 112 105 S175 78 215 92 S278 125 320 82 S390 68 425 58 S460 73 480 42" />
+          </svg>
+          <div class="chart-x-labels" aria-hidden="true"><span>Earlier</span><span>Today</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+</body>
+
+</html>

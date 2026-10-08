@@ -1,0 +1,229 @@
+/* ---- Landing page forecast previews ----------------------------------- */
+.landing-dashboard {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  width: min(1200px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 24px 0;
+  align-content: center;
+  box-sizing: border-box;
+}
+
+.preview-card {
+  min-width: 0;
+  min-height: 250px;
+  padding: 20px;
+  border-radius: 15px;
+  background: var(--maintint);
+  box-shadow: 0px 5px 1px var(--main2tint) inset,
+    0px -1px 5px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(3px);
+}
+
+.preview-card h2 {
+  margin-bottom: 18px;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.house-preview {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.8fr) minmax(0, 1.2fr);
+  align-items: center;
+  gap: 18px;
+  height: calc(100% - 45px);
+}
+
+.house-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.half-pie-window {
+  width: min(100%, 170px);
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+}
+
+.half-pie {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(var(--red-4) 0deg 90deg, var(--blue-4) 90deg 360deg);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 12px;
+  font-size: 0.75rem;
+}
+
+.chart-legend span,
+.odds-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.legend-dot {
+  display: inline-block;
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dem-dot {
+  background: var(--blue-2);
+}
+
+.rep-dot {
+  background: var(--red-2);
+}
+
+.control-odds {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--main2tint);
+}
+
+.control-odds h3 {
+  margin: 0;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.odds-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.odds-row strong {
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.map-preview {
+  display: grid;
+  min-height: 130px;
+  place-items: center;
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.09), transparent 67%),
+    var(--main2tint);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.9rem;
+}
+
+.compact-odds {
+  margin-top: 12px;
+  padding: 10px 14px;
+  gap: 8px;
+}
+
+.line-chart {
+  position: relative;
+  height: 155px;
+  margin: 4px 4px 0 24px;
+  border-left: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.line-chart svg {
+  position: absolute;
+  inset: 0 0 18px;
+  width: 100%;
+  height: calc(100% - 18px);
+  overflow: visible;
+}
+
+.chart-gridline {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-dasharray: 4 5;
+  stroke-width: 1;
+}
+
+.chart-trend {
+  fill: none;
+  stroke: var(--blue-2);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.chart-y-labels {
+  position: absolute;
+  top: 0;
+  bottom: 20px;
+  left: -24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+}
+
+.chart-x-labels {
+  position: absolute;
+  right: 0;
+  bottom: -20px;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+}
+
+@media (max-width: 760px) {
+  .nav-header {
+    height: auto;
+    min-height: 38px;
+    flex-wrap: wrap;
+  }
+
+  .nav-header .dropbtn,
+  .nav-header .nav-button {
+    padding-inline: 12px;
+  }
+
+  .landing-dashboard {
+    width: min(560px, calc(100% - 24px));
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .preview-card {
+    min-height: 220px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .house-preview {
+    grid-template-columns: minmax(100px, 0.75fr) minmax(0, 1.25fr);
+    gap: 10px;
+  }
+
+  .control-odds {
+    padding: 10px;
+  }
+
+  .odds-row {
+    font-size: 0.72rem;
+  }
+}
