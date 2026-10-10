@@ -39,6 +39,7 @@ def runPresidentialModel(electionData, year):
             if d.Year != '2028' and d.State == 'National' :
                 
                 natPolling = float(d.Polls)
+                print (natPolling)
                 maxDPopVote = natPolling + 3
                 maxRPopVote = natPolling - 3
 
@@ -94,12 +95,7 @@ def runPresidentialModel(electionData, year):
                 shift2 = neutral2020 - neutral2016
                 neutralProjectedOnShift = neutral2024 + ((shift1 + shift2) / 2)     
 
-            if (d.State == "Florida" or d.State == "Wisconsin" or d.State == "Kansas"):
-                print ("====" + str(d.State) + "====")
-                print(shift1)
-                print(shift2)
-                print ((shift1 + shift2) / 2)   
-                print ("Expected State's neutral environment for " + str(year) + ": " + str(neutralProjectedOnShift))
+
             
             # Get projected shift based on polls, and then average that with the neutralProjectedOnShift
             if statePolls != None :
@@ -109,7 +105,8 @@ def runPresidentialModel(electionData, year):
                 neutralProjectedonPolls = None
                 neutralProjected = neutralProjectedOnShift
                 
-
+            if ((d.State == "Florida" or d.State == "Wisconsin" or d.State == "Kansas") and year == '2024'):
+                print ("====" + str(d.State) + "====")
             # ---------------------------------------------------
             # Get all projected results (this is the main model)
             # ----------------------------------------------------
@@ -130,6 +127,7 @@ def runPresidentialModel(electionData, year):
                         outcomesArray.append(outcome)
                         maxRNat = maxRNat + .5
                     maxR = maxR + .5
+
 
             # Outcomes based on the expected state shift
             maxD = neutralProjectedOnShift + 6
@@ -216,6 +214,8 @@ def runPresidentialModel(electionData, year):
                     maxRNat = maxRNat + .5
                 maxR = maxR + .5
 
+
+
             # Sort Array and Count the numbber times dem wins to get a percentage and a median outcome
             numDWins = 0
             outcomesArray.sort()
@@ -231,6 +231,10 @@ def runPresidentialModel(electionData, year):
 
             d.Chance = percentDWin
             d.Median = medianOutcome
+
+            if ((d.State == "Florida" or d.State == "Wisconsin" or d.State == "Kansas") and year == '2024'):
+                print ("====" + str(d.State) + "====")
+                print (d.Chance)
     return natPolling, electionData
 
 def runSenateModel(electionData, year):

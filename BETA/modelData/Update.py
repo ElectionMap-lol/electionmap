@@ -1,6 +1,7 @@
 
 # Import Statements
 import csv
+import statistics 
 
 # Define a class that will represent each row as an object
 class election:
@@ -53,16 +54,72 @@ def presidentModel(year, data):
             # Get the neutral environment for the state and project how it will be in the next election based on the previous 3 elections.  This is calculated by taking the difference between the state result and the national popular vote for each of the last 3 elections, and then averaging the difference between those differences to project how the state will perform in the next election.
             neutralEnvProjectedShift = (((float(prevElectionResult.Margin) - float(prevPopularVoteWins.get(str(prevElection1)))) - (float(prevElectionResult2.Margin) - float(prevPopularVoteWins.get(str(prevElection2))))) + ((float(prevElectionResult2.Margin) - float(prevPopularVoteWins.get(str(prevElection2)))) - (float(prevElectionResult3.Margin) - float(prevPopularVoteWins.get(str(prevElection3)))))) / 2    
             projectNeutralEnvForStateTrends = (float(prevElectionResult.Margin) - float(prevPopularVoteWins.get(str(prevElection1)))) + neutralEnvProjectedShift
-            
 
-            if election.Polls != None :
-                projectNeutralEnvForStatePolling = election.Polls# - natPolling
+            # Temp nat polling until there's reliable 2028 polling
+            natpolling = 0
+            if (year == 2024):
+                natpolling = 1.27
+            
+            # Get the neutral environment of the state based on the polling
+            if election.Polls != '' :
+                projectNeutralEnvForStatePolling = float(election.Polls) - natpolling
                 projectNeutralEnvForState = (projectNeutralEnvForStatePolling + projectNeutralEnvForStateTrends) / 2          
             else : 
+                projectNeutralEnvForStatePolling = None
                 projectNeutralEnvForState = projectNeutralEnvForStateTrends
-                
+            # Now we have the neutral environments for the state and all the data we need.  Now we need to generate some values and see how many wins each
 
+            outcomesArray = []
             
+            # Outcomes based on polling averages and a standard polling error 
+            if (projectNeutralEnvForStatePolling != None):
+                outcomesArray = generateOutcomes(outcomesArray, projectNeutralEnvForStatePolling, 6, natpolling, 3, 2)
+            # Outcomes based on the expected state shift
+            outcomesArray = generateOutcomes(outcomesArray, projectNeutralEnvForStateTrends, 6, natpolling, 3, 2)
+
+             # Outcomes based on last election
+            outcomesArray = generateOutcomes(outcomesArray, float(prevElectionResult.Margin), 4, 0, 3, 1)
+
+            # Outcomes based on the expected shift based on results and polls
+            outcomesArray = generateOutcomes(outcomesArray, projectNeutralEnvForState, 12, natpolling, 7, 2)
+            
+            # Sort Array and Count the numbber times dem wins to get a percentage and a median outcome
+            numDWins = 0
+            outcomesArray.sort()
+
+            i = 0
+            while (i < len(outcomesArray)) :
+                if outcomesArray[i] > 0 :
+                    numDWins = numDWins + 1
+                i = i + 1
+           
+            percentDWin = numDWins / len(outcomesArray)
+            medianOutcome = statistics.median(outcomesArray)
+
+            election.Chance = percentDWin
+            election.Median = medianOutcome
+
+            return data
+        
+def generateOutcomes(outcomesArray, inputBaseline, errorOffset, nationalPoll, nationalPollOffset, weight):
+    maxD = inputBaseline + errorOffset
+    maxR = inputBaseline - errorOffset
+    while maxR < (maxD + 0.1) :
+        maxDPopVote = nationalPoll + nationalPollOffset
+        maxRPopVote = nationalPoll - nationalPollOffset
+        while (maxRPopVote < (maxDPopVote + .1)):
+            outcome = maxR + maxRPopVote
+            count = 0
+            while (count < weight):
+                outcomesArray.append(outcome)
+                count += 1
+            maxRPopVote = maxRPopVote + .5
+        maxR = maxR + .5 
+    return outcomesArray           
+
+
+def houseModel(year, data):
+    print("")
 
 # Variables
 # URL to the CSV File containing the election data
@@ -72,5 +129,18 @@ electionsData = csv_to_objects(dataUrl)
 
 print("====Elections Data Loaded Successfully====")
 
-presidentModel(2024, electionsData)
-presidentModel(2028, electionsData)
+electionsData = presidentModel(2024, electionsData)
+electionsData = presidentModel(2028, electionsData)
+
+csvFile = './BETA/ModelData/ElectionsDataCopy.csv'
+
+data_dict = [
+    {"StateA": e.StateA, "State": e.State, "District": e.District, "Year": e.Year, "Dcandidate": e.Dcandidate, "Rcandidate": e.Rcandidate, "Ocandidate": e.Ocandidate, "Dpercent": e.Dpercent, "Rpercent": e.Rpercent, "Opercent": e.Opercent, "IncumbentParty": e.IncumbentParty, "Winner": e.Winner, "Margin": e.Margin, "IncOverPerformance": e.IncOverPerformance, "P2024": e.P2024,"P2020": e.P2020,"P2016": e.P2016,"P2012": e.P2012, "P2008": e.P2008,"P2004": e.P2004,"P2000": e.P2000, "Evs": e.Evs, "Redistricted" : e.Redistricted, "Polls" : e.Polls, "Chance": e.Chance, "Margin": e.Margin, "Median": e.Median} for e in electionsData
+]
+# Open the CSV file in write mode
+with open(csvFile, mode='w', newline='') as file:
+    writer = csv.DictWriter(file, fieldnames=data_dict[0].keys())
+    # Write the header (fieldnames)
+    writer.writeheader()
+    # Write the data
+    writer.writerows(data_dict)

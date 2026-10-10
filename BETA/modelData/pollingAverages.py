@@ -87,7 +87,7 @@ def pollsToInclude(pollingdata, state, race, date):
                     # Compare them using standard comparison operators
                     if newPollDate < oldPollDate:
                         break
-                    elif newPollDate > oldPollDate:
+                    elif newPollDate >= oldPollDate:
                         pollsToAverage.remove(currentPoll)
                         pollsToAverage.append(poll)
             if (foundDuplicate == False):
@@ -131,9 +131,9 @@ def polling_averages(pollingData,pollsterRatings):
             count += weight
             
             #DEBUG
-            if poll.state == "IA":
-                print (poll.state + " " + str(poll.race) + " " + poll.date + " " + poll.pollster + " " + poll.DPer + " " + poll.RPer)
-                print (weight)
+            #if poll.state == "IA":
+             #   print (poll.state + " " + str(poll.race) + " " + poll.date + " " + poll.pollster + " " + poll.DPer + " " + poll.RPer)
+             #   print (weight)
 
         if (count > 0):
             DperAvg = Dsum / count
