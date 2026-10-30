@@ -96,8 +96,6 @@ function handleClickResults(year){
             processStates(results.data, year);
             prepareMapForYear();
             setColorsBasedOnResults(year);
-            // Each year has its own races, so the Call State list has to follow.
-            populateDropDown();
         },
         error: function (error) {
             console.error("Error parsing CSV:", error);
@@ -701,8 +699,6 @@ const numberInput = document.getElementById('numberInput');
 numberInput.addEventListener('change', changeInputTypeNumber);
 
 function populateDropDown() {
-    // Rebuilt for every view, so clear the last one's races rather than add to them.
-    dropdown.replaceChildren();
     // Array of options
     const optionsArray = [];
     statesArray.forEach(element => {
