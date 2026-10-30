@@ -285,6 +285,10 @@ window.addEventListener('DOMContentLoaded', () => {
           const dashboard = column.closest('.dashboard');
           const rail = dashboard && dashboard.querySelector('.dashboard-rail');
           const outer = dashboard ? dashboard.clientWidth : column.clientWidth;
+          // Same trap with the rail: it grows into whatever width the map leaves
+          // spare, so it is measured with the map unfitted, back at its base share.
+          // Measured grown, the map could never widen again on a later resize.
+          column.style.removeProperty('--map-width');
           const railWidth = rail ? rail.getBoundingClientRect().width : 0;
           const widest = outer - railWidth
               - parseFloat(columnStyle.paddingLeft) - parseFloat(columnStyle.paddingRight);

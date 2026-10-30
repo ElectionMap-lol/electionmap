@@ -42,6 +42,10 @@
   --red-4: rgb(163, 59, 59);
   --red-5: #892525;
 
+  /* Brand header (68px) plus nav bar (50px): what each page's main area takes
+     off 100vh so the page is exactly one window tall. */
+  --chrome-height: 118px;
+
   font-size: 20px;
   color: white;
 }
@@ -121,13 +125,14 @@ button:active {
    The title bar: a blue block and a red block running to the screen edges,
    each capped by an SVG curve, with the site title between them. The colours
    are decorative - they carry no result data - so they are named for the
-   colour they are, not for a party. */
+   colour they are, not for a party. Everything in it is 90% of its original
+   size (75px tall, a 2.5rem title), which read as oversized at 100% zoom. */
 .brand-header {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 75px;
+  height: 68px;
   z-index: 5;
 }
 
@@ -141,7 +146,7 @@ button:active {
 }
 
 .brand-title {
-  padding-inline: 100px;
+  padding-inline: 90px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -150,7 +155,7 @@ button:active {
 }
 
 .brand-title h1 {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   height: 100%;
   display: flex;
   align-items: center;
@@ -166,15 +171,15 @@ button:active {
 
 .brand-curve-blue {
   z-index: 10;
-  height: 75px;
-  min-width: 81px;
+  height: 68px;
+  min-width: 73px;
   fill: var(--blue-5);
-  filter: drop-shadow(15px 0px 0px var(--blue-4)) drop-shadow(20px 0px 0px var(--blue-3)) drop-shadow(25px 0px 0px var(--blue-2)) drop-shadow(30px 0px 0px var(--blue-1));
+  filter: drop-shadow(13.5px 0px 0px var(--blue-4)) drop-shadow(18px 0px 0px var(--blue-3)) drop-shadow(22.5px 0px 0px var(--blue-2)) drop-shadow(27px 0px 0px var(--blue-1));
   transition: 0.5s;
 }
 
 .brand-header:hover .brand-curve-blue {
-  filter: drop-shadow(30px 0px 0px var(--blue-4)) drop-shadow(30px 0px 0px var(--blue-3)) drop-shadow(30px 0px 0px var(--blue-2)) drop-shadow(30px 0px 0px var(--blue-1));
+  filter: drop-shadow(27px 0px 0px var(--blue-4)) drop-shadow(27px 0px 0px var(--blue-3)) drop-shadow(27px 0px 0px var(--blue-2)) drop-shadow(27px 0px 0px var(--blue-1));
   transition: 0.5s;
 }
 
@@ -186,15 +191,15 @@ button:active {
 
 .brand-curve-red {
   z-index: 10;
-  height: 75px;
-  min-width: 81px;
+  height: 68px;
+  min-width: 73px;
   fill: var(--red-5);
-  filter: drop-shadow(-15px 0px 0px var(--red-4)) drop-shadow(-20px 0px 0px var(--red-3)) drop-shadow(-25px 0px 0px var(--red-2)) drop-shadow(-30px 0px 0px var(--red-1));
+  filter: drop-shadow(-13.5px 0px 0px var(--red-4)) drop-shadow(-18px 0px 0px var(--red-3)) drop-shadow(-22.5px 0px 0px var(--red-2)) drop-shadow(-27px 0px 0px var(--red-1));
   transition: 0.5s;
 }
 
 .brand-header:hover .brand-curve-red {
-  filter: drop-shadow(-30px 0px 0px var(--red-4)) drop-shadow(-30px 0px 0px var(--red-3)) drop-shadow(-30px 0px 0px var(--red-2)) drop-shadow(-30px 0px 0px var(--red-1));
+  filter: drop-shadow(-27px 0px 0px var(--red-4)) drop-shadow(-27px 0px 0px var(--red-3)) drop-shadow(-27px 0px 0px var(--red-2)) drop-shadow(-27px 0px 0px var(--red-1));
   transition: 0.5s;
 }
 
@@ -320,7 +325,7 @@ button:active {
 /* ---- About page -------------------------------------------------------- */
 .about-columns {
   display: flex;
-  height: calc(100vh - 125px);
+  height: calc(100vh - var(--chrome-height));
 }
 
 .about-columns a {
@@ -339,7 +344,7 @@ button:active {
   padding: 20px;
   box-shadow: 0px 0px 5px var(--main2tint);
   overflow-y: scroll;
-  height: calc(100vh - 170px);
+  height: calc(100vh - var(--chrome-height) - 45px);
   text-align: center;
 }
 
@@ -352,7 +357,7 @@ button:active {
 /* ---- Polls page -------------------------------------------------------- */
 .two-column-layout {
   display: flex;
-  height: calc(100vh - 125px);
+  height: calc(100vh - var(--chrome-height));
 }
 
 .two-column-layout .left-column {
@@ -373,7 +378,13 @@ button:active {
    ========================================================================= */
 @media (max-width: 960px) {
 
-  /* The brand bar and nav cost 125px of an 812px screen before any content;
+  /* The bars are only 52 + 38px here, but the phone layouts were tuned against
+     the old desktop figure of 125px, so it stays at that. */
+  :root {
+    --chrome-height: 125px;
+  }
+
+  /* The brand bar and nav cost 118px of an 812px screen before any content;
      trimming them buys back most of what the dashboard needs to fit. */
   .brand-header {
     height: 52px;

@@ -16,23 +16,28 @@
 /* ---- Dashboard layout -------------------------------------------------- */
 .dashboard {
   display: flex;
-  /* min- rather than a fixed height: the map fills the column's width and keeps
-     its proportions, so on a wide screen it is taller than the viewport and the
-     page scrolls instead of the frame being squashed and the map letterboxed. */
-  min-height: calc(100vh - 125px);
+  /* Exactly one window tall on desktop, so the page itself never scrolls:
+     fitFrame sizes the map to this height, and the rail scrolls inside itself if
+     a short window runs it out of room. The mobile block sets height back to
+     auto; the min-height is what still fills a phone's screen there. */
+  height: calc(100vh - var(--chrome-height));
+  min-height: calc(100vh - var(--chrome-height));
   flex-grow: 1;
   /* The map is capped by height, so on a wide monitor there is surplus width no
-     matter what: 1286px of map in a 1580px column at 2000x1020. Rather than leave
-     it as a gap around the map with the rail pinned to the screen edge, the rail
-     and the map travel together and the surplus splits evenly outside them. */
+     matter what. The rail takes it first (see below), which keeps its buttons
+     and labels on one line and so keeps it short; whatever is left past the
+     rail's cap splits evenly outside the rail and the map. */
   justify-content: center;
 }
 
 /* Holds the view selector, call-state and projections now that the right
    column is gone, so it stacks them and scrolls if the viewport is short. */
 .dashboard-rail {
-  flex: 0 0 20%;
+  /* 20% is the floor; it grows into the map's spare width up to 24rem. fitFrame
+     measures it at the floor, so growing never costs the map any width. */
+  flex: 1 0 20%;
   min-width: 20%;
+  max-width: 24rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -64,6 +69,10 @@
 #details-box {
   position: fixed;
   z-index: 100;
+  /* It trails 20px under the cursor everywhere, invisible or not, so it must
+     never catch the mouse itself: a quick move down onto the Maps dropdown landed
+     on the box first, and the menu lost its hover and shut. */
+  pointer-events: none;
   padding: 1rem;
   width: fit-content;
   background-color: rgba(0, 0, 0, 0.5);
@@ -372,6 +381,13 @@ svg.map {
   white-space: nowrap;
 }
 
+/* The Governor map stacks a second title under its first row of buttons. That
+   row had nothing below it, so the selected button's drop and ring ran into the
+   title. Only Governor has a title following buttons. */
+.view-select .button-container + .view-title {
+  margin-top: 10px;
+}
+
 /* Which view you are actually looking at. Nothing showed this before. */
 .view-select .button-container button.is-selected {
   background: linear-gradient(to bottom, var(--main3color), var(--maincolor));
@@ -392,11 +408,13 @@ svg.map {
 
 .menu-panel {
   border-radius: 15px;
-  padding: 15px;
+  /* Trimmed top and bottom only, so the rail fits one window; the side spacing
+     sets the panel's width and is left alone. */
+  padding: 12px 15px;
   box-shadow: 0px 5px 2px var(--main2tint),
     0px 1px 1px rgba(255, 255, 255, 0.1) inset;
   width: calc(100% - 50px);
-  margin: 10px;
+  margin: 6px 10px;
   height: auto;
   background-color: var(--maincolor);
 }
@@ -413,6 +431,10 @@ svg.map {
   width: 50%;
   text-align: center;
   padding-inline: 10px;
+  /* Already inside a padded panel; the full 15px + 10px again on top and bottom
+     was the rail's biggest stretch of empty space. */
+  padding-block: 10px;
+  margin-block: 4px;
 }
 
 
@@ -425,7 +447,8 @@ svg.map {
   justify-content: flex-start;
   align-items: center;
   text-align: center;
-  gap: 15px;
+  /* Was 15px; the rail has to fit one window, so the spacing goes first. */
+  gap: 8px;
 }
 
 .call-state select {
@@ -471,7 +494,7 @@ svg.map {
   align-items: center;
   justify-content: center;
   display: flex;
-  height: 3rem;
+  height: 2.5rem;
   border: 0;
 }
 
@@ -511,7 +534,7 @@ svg.map {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  padding-block: 10px;
+  padding-block: 6px;
 }
 
 .margin-input input {
@@ -531,6 +554,14 @@ svg.map {
 
 .margin-input button {
   width: 50%;
+}
+
+/* Helper text, so a step down from body size: that fits it on one line in the
+   wider desktop rail. Where it still wraps, balance it rather than leaving a
+   lone "%)" on the second line. */
+.margin-input-box p {
+  font-size: 0.85rem;
+  text-wrap: balance;
 }
 
 
@@ -563,7 +594,10 @@ svg.map {
     padding: 6px 0 4px;
   }
 
+  /* Full width under the map, as before: no growing, no desktop cap. */
   .dashboard-rail {
+    flex-grow: 0;
+    max-width: none;
     overflow-y: visible;
     order: 2;
   }
@@ -671,6 +705,12 @@ svg.map {
     font-size: 0.95rem;
   }
 
+  /* The desktop gap above Governor's second title; the phone layout is fine
+     without it. */
+  .view-select .button-container + .view-title {
+    margin-top: 0;
+  }
+
   .view-nav {
     height: 1.8rem;
   }
@@ -716,6 +756,7 @@ svg.map {
     font-size: 0.65rem;
     line-height: 1.15;
     margin: 0;
+    text-wrap: wrap;
   }
 
   .slider {
