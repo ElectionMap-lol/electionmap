@@ -46,9 +46,13 @@
       <p>About</p>
     </div>
   </a>
+
+  <button class="nav-export" id="exportButton" type="button">Export</button>
 </header>
 
-    <div class="dashboard stripe">
+    <!-- data-export-*: how the Export image names what it shows. See describeView.
+         The Pres page and the Incumbents button override it below. -->
+    <div class="dashboard stripe" data-export-election="House Elections">
       <div class="dashboard-rail">
 
         <!-- View selector: one control, one shared highlight. Only one view is
@@ -67,14 +71,14 @@
                   <button id="2024 Model" data-model="2024"> <p>2024</p> </button>
                 </div>
               </div>
-              <div class="view-page" data-title="House">
+              <div class="view-page" data-title="House" data-export-label="Actual Results">
                 <div class="button-container">
-                  <button id="Incumbents" data-action="incumbent"> <p>Incumbents</p> </button>
+                  <button id="Incumbents" data-action="incumbent" data-export-election="U.S. House" data-export-label="Incumbents"> <p>Incumbents</p> </button>
                   <button id="2024 Actual Results" data-results="2024"> <p>House 2024</p> </button>
                   <button id="2022 Actual Results" data-results="2022"> <p>House 2022</p> </button>
                 </div>
               </div>
-              <div class="view-page" data-title="Pres">
+              <div class="view-page" data-title="Pres" data-export-election="Presidential Election" data-export-label="Results by Congressional District">
                 <div class="button-container">
                   <button id="2024 President Actual Results" data-results="2024p"> <p>Pres. 2024</p> </button>
                   <button id="2020 President Actual Results" data-results="2020p"> <p>Pres. 2020</p> </button>

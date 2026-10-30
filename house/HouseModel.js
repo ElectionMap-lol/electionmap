@@ -396,6 +396,9 @@ const numberInput = document.getElementById('numberInput');
 numberInput.addEventListener('change', changeInputTypeNumber);
 
 function populateDropDown() {
+    // Called again on every model view, so clear the old list rather than add a
+    // second copy of every district to it.
+    dropdown.replaceChildren();
     // Array of options
     const optionsArray = [];
     houseArray.forEach(element => {

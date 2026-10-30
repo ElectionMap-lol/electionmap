@@ -412,6 +412,23 @@ button:active {
     height: 38px;
   }
 
+  /* The nav items kept their desktop 50px height in the 38px bar, so a tap's
+     shading and the Maps menu both hung 12px down over the page. */
+  .nav-button,
+  .dropbtn {
+    height: 38px;
+  }
+
+  /* Solid rather than see-through: over the map the items were hard to read. */
+  .dropdown-content {
+    background-color: var(--main3color);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  }
+
+  .dropdown-content a {
+    padding: 10px 12px;
+  }
+
   /* Tighter on a phone. maps.css gives .rail-pair .menu-panel the same. */
   .inset-panel {
     padding: 8px;
